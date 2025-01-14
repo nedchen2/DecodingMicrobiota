@@ -425,6 +425,12 @@ document.write(`
 <ul class="simple">
 <li><p>Select the correct input type based on the tutorial. <a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/importing/#fastq-manifest-formats">Import</a></p></li>
 </ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>tools<span class="w"> </span>import<span class="w">   </span>--type<span class="w"> </span><span class="s1">&#39;SampleData[PairedEndSequencesWithQuality]&#39;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--input-path<span class="w"> </span>manifest.tsv<span class="w">  </span><span class="se">\</span>
+<span class="w">  </span>--output-path<span class="w"> </span>paired-end-demux.qza<span class="w">  </span><span class="se">\</span>
+<span class="w">  </span>--input-format<span class="w"> </span>PairedEndFastqManifestPhred33V2
+</pre></div>
+</div>
 <p>After importation, Examine the sequencing quality with <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">demux</span> <span class="pre">summarize</span></code>:</p>
 <ul class="simple">
 <li><p>This summary offers visual insights into the distribution of sequence qualities at each position within the sequence data for the subsequent step in the pipeline. The sequence qualities guide decisions regarding certain sequence-processing parameters, including the truncation settings for the DADA2 denoising step.</p></li>
@@ -449,7 +455,19 @@ document.write(`
 <blockquote>
 <div><p>–p-trim-left-r  : m trims off the first m bases of each reverse read sequence</p>
 </div></blockquote>
-<p>Check the result from last step to set the parameter used in this step.</p>
+<p>Check the result from last step to set the parameter used in this step. “TBD”: To be determined</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>dada2<span class="w"> </span>denoise-paired<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--i-demultiplexed-seqs<span class="w"> </span>paired-end-demux.qza<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--p-trunc-len-f<span class="w"> </span><span class="s2">&quot;TBD&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--p-trunc-len-r<span class="w"> </span><span class="s2">&quot;TBD&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--p-trim-left-f<span class="w"> </span><span class="s2">&quot;TBD&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--p-trim-left-r<span class="w"> </span><span class="s2">&quot;TBD&quot;</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--p-n-threads<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--o-representative-sequences<span class="w"> </span>rep-seqs.qza<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--o-table<span class="w"> </span>table.qza<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--o-denoising-stats<span class="w"> </span>denoising-stats.qza<span class="w"> </span><span class="c1"># --o referes to output</span>
+</pre></div>
+</div>
 <p>After the output, you will get the feature table (ASVs table) and their corresponding sequence (.fasta). But it has also been compacted in the QIIME2 (.qza).</p>
 <p>Try use <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">tools</span> <span class="pre">peek</span></code></p>
 <ul class="simple">
@@ -464,25 +482,13 @@ FeatureTable to the sequences they represent.</p></li>
 <section id="upstream-building-phylogenetic-tree">
 <h3>2.1.3 Upstream: Building Phylogenetic Tree<a class="headerlink" href="#upstream-building-phylogenetic-tree" title="Link to this heading">#</a></h3>
 <p>We can build the phylogenetic tree based on the sequence difference among features. Phylogenetic diversity metrics like Faith’s pd, weighted and unweighted Unifrac distance require the phylogenetic tree to calculate.</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">qiime</span><span class="w"> </span><span class="n">phylogeny</span><span class="w"> </span><span class="n">align</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">tree</span><span class="o">-</span><span class="n">mafft</span><span class="o">-</span><span class="n">fasttree</span><span class="w"> </span>\
-<span class="o">--</span><span class="n">i</span><span class="o">-</span><span class="n">sequences</span><span class="w"> </span><span class="n">rep</span><span class="o">-</span><span class="n">seqs.qza</span><span class="w"> </span>\<span class="w"> </span><span class="c1"># sequence of the feature (ASVs)</span>
-<span class="o">--</span><span class="n">o</span><span class="o">-</span><span class="n">alignment</span><span class="w"> </span><span class="n">aligned</span><span class="o">-</span><span class="n">rep</span><span class="o">-</span><span class="n">seqs.qza</span><span class="w"> </span>\
-<span class="o">--</span><span class="n">o</span><span class="o">-</span><span class="n">masked</span><span class="o">-</span><span class="n">alignment</span><span class="w"> </span><span class="n">masked</span><span class="o">-</span><span class="n">aligned</span><span class="o">-</span><span class="n">rep</span><span class="o">-</span><span class="n">seqs.qza</span><span class="w"> </span>\
-<span class="o">--</span><span class="n">o</span><span class="o">-</span><span class="n">tree</span><span class="w"> </span><span class="n">unrooted</span><span class="o">-</span><span class="n">tree.qza</span><span class="w"> </span>\
-<span class="o">--</span><span class="n">o</span><span class="o">-</span><span class="n">rooted</span><span class="o">-</span><span class="n">tree</span><span class="w"> </span><span class="n">rooted</span><span class="o">-</span><span class="n">tree.qza</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>phylogeny<span class="w"> </span>align-to-tree-mafft-fasttree<span class="w"> </span><span class="se">\</span>
+--i-sequences<span class="w"> </span>rep-seqs.qza<span class="w"> </span><span class="se">\ </span>
+--o-alignment<span class="w"> </span>aligned-rep-seqs.qza<span class="w"> </span><span class="se">\</span>
+--o-masked-alignment<span class="w"> </span>masked-aligned-rep-seqs.qza<span class="w"> </span><span class="se">\</span>
+--o-tree<span class="w"> </span>unrooted-tree.qza<span class="w"> </span><span class="se">\</span>
+--o-rooted-tree<span class="w"> </span>rooted-tree.qza<span class="w"> </span><span class="c1"># rep-seqs.qza is sequence of the feature (ASVs)</span>
 </pre></div>
-</div>
-</div>
-<div class="cell_output docutils container">
-<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="n">Error</span> <span class="ow">in</span> <span class="n">parse</span><span class="p">(</span><span class="n">text</span> <span class="o">=</span> <span class="nb">input</span><span class="p">):</span> <span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="mi">7</span><span class="p">:</span> <span class="n">unexpected</span> <span class="n">symbol</span>
-<span class="mi">1</span><span class="p">:</span> <span class="n">qiime</span> <span class="n">phylogeny</span>
-          <span class="o">^</span>
-<span class="ne">Traceback</span>:
-</pre></div>
-</div>
-</div>
 </div>
 </section>
 <section id="upstream-taxonomic-assignment">
@@ -493,15 +499,11 @@ FeatureTable to the sequences they represent.</p></li>
 <ul class="simple">
 <li><p>As discussed before, the choice of region will influence the resolution of your taxonomic assignment. The use of classifiers trained with different length will also influence the resolution. The more specific, the better.</p></li>
 </ul>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">qiime</span><span class="w"> </span><span class="n">feature</span><span class="o">-</span><span class="n">classifier</span><span class="w"> </span><span class="n">classify</span><span class="o">-</span><span class="n">sklearn</span><span class="w"> </span>\
-<span class="o">--</span><span class="n">i</span><span class="o">-</span><span class="n">classifier</span><span class="w"> </span><span class="n">classifier.qza</span><span class="w"> </span>\<span class="w"> </span>
-<span class="o">--</span><span class="n">i</span><span class="o">-</span><span class="n">reads</span><span class="w"> </span><span class="n">rep</span><span class="o">-</span><span class="n">seqs.qza</span><span class="w"> </span>\<span class="w">           </span><span class="c1"># sequence of the feature (ASVs)</span>
-<span class="o">--</span><span class="n">o</span><span class="o">-</span><span class="n">classification</span><span class="w"> </span><span class="n">taxonomy.qza</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>feature-classifier<span class="w"> </span>classify-sklearn<span class="w"> </span><span class="se">\</span>
+--i-classifier<span class="w"> </span>classifier.qza<span class="w"> </span><span class="se">\ </span>
+--i-reads<span class="w"> </span>rep-seqs.qza<span class="w"> </span><span class="se">\ </span><span class="w">          </span><span class="c1"># sequence of the feature (ASVs)</span>
+--o-classification<span class="w"> </span>taxonomy.qza
 </pre></div>
-</div>
-</div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -548,14 +550,10 @@ FeatureTable to the sequences they represent.</p></li>
 <section id="kegg-pathway-estimation">
 <h3>2.2.4 KEGG pathway estimation<a class="headerlink" href="#kegg-pathway-estimation" title="Link to this heading">#</a></h3>
 <p>To estimate the KEGG pathway abundance from the KO_metagenome_out, we need to rerun the script using the mapfile from KEGG pathway to KO, like this:</p>
-<div class="cell docutils container">
-<div class="cell_input docutils container">
-<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">pathway_pipeline.py</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="n">KO_metagenome_out</span><span class="o">/</span><span class="n">pred_metagenome_contrib.tsv.gz</span><span class="w"> </span>\<span class="w"> </span>
-<span class="w">    </span><span class="o">-</span><span class="n">o</span><span class="w"> </span><span class="n">KEGG_pathways_out</span><span class="w"> </span><span class="o">--</span><span class="n">no_regroup</span><span class="w"> </span>\
-<span class="w">    </span><span class="o">--</span><span class="n">map</span><span class="w"> </span><span class="n">KEGG_pathways_to_KO.tsv</span><span class="w">  </span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pathway_pipeline.py<span class="w"> </span>-i<span class="w"> </span>KO_metagenome_out/pred_metagenome_contrib.tsv.gz<span class="w"> </span><span class="se">\ </span>
+<span class="w">    </span>-o<span class="w"> </span>KEGG_pathways_out<span class="w"> </span>--no_regroup<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--map<span class="w"> </span>KEGG_pathways_to_KO.tsv<span class="w">  </span>
 </pre></div>
-</div>
-</div>
 </div>
 <p>This map file has been deposited under the github Repository of this tutorial documents/KEGGdb. Please note that this mapfile was created through KEGG database, assessed from 2023-09-26.</p>
 </section>
