@@ -1,0 +1,719 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Chapter 2. Upstream analysis (From raw sequencing data to Feature counts matrix and Pathway counts matrix) &#8212; Decoding Microbiota</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/sphinx-book-theme.css?v=a3416100" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-thebe.css?v=4fa983c6" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="_static/documentation_options.js?v=9eb32ce0"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=f281be69"></script>
+    <script src="_static/scripts/sphinx-book-theme.js?v=887ef09a"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script async="async" src="_static/sphinx-thebe.js?v=c100c467"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script>const THEBE_JS_URL = "https://unpkg.com/thebe@0.8.2/lib/index.js"; const thebe_selector = ".thebe,.cell"; const thebe_selector_input = "pre"; const thebe_selector_output = ".output, .cell_output"</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '02-Micro-Decode';</script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Chapter 3. Introduction to Microbiome Analysis" href="03-Micro-Decode.html" />
+    <link rel="prev" title="Chapter 1. Basic materials for 16S analysis" href="01-Micro-Decode.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search this book..."
+         aria-label="Search this book..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+    
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="intro.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/logo.png" class="logo__image only-light" alt="Decoding Microbiota - Home"/>
+    <script>document.write(`<img src="_static/logo.png" class="logo__image only-dark" alt="Decoding Microbiota - Home"/>`);</script>
+  
+  
+</a></div>
+        <div class="sidebar-primary-item">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script></div>
+        <div class="sidebar-primary-item"><nav class="bd-links bd-docs-nav" aria-label="Main">
+    <div class="bd-toc-item navbar-nav active">
+        
+        <ul class="nav bd-sidenav bd-sidenav__home-link">
+            <li class="toctree-l1">
+                <a class="reference internal" href="intro.html">
+                    Decoding Microbiota: Tutorial on 16S Amplicon Analysis
+                </a>
+            </li>
+        </ul>
+        <ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="01-Micro-Decode.html">Chapter 1. Basic materials for 16S analysis</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 2. Upstream analysis (From raw sequencing data to Feature counts matrix and Pathway counts matrix)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="03-Micro-Decode.html">Chapter 3. Introduction to Microbiome Analysis</a></li>
+</ul>
+
+    </div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+
+<div class="sbt-scroll-pixel-helper"></div>
+
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item"><button class="sidebar-toggle primary-toggle btn btn-sm" title="Toggle primary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <span class="fa-solid fa-bars"></span>
+</button></div>
+      
+    </div>
+  
+  
+    <div class="header-article-items__end">
+      
+        <div class="header-article-item">
+
+<div class="article-header-buttons">
+
+
+
+
+
+<div class="dropdown dropdown-source-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Source repositories">
+    <i class="fab fa-github"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="https://github.com/nedchen2/DecodingMicrobiota" target="_blank"
+   class="btn btn-sm btn-source-repository-button dropdown-item"
+   title="Source repository"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fab fa-github"></i>
+  </span>
+<span class="btn__text-container">Repository</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li><a href="https://github.com/nedchen2/DecodingMicrobiota/issues/new?title=Issue%20on%20page%20%2F02-Micro-Decode.html&body=Your%20issue%20content%20here." target="_blank"
+   class="btn btn-sm btn-source-issues-button dropdown-item"
+   title="Open an issue"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-lightbulb"></i>
+  </span>
+<span class="btn__text-container">Open issue</span>
+</a>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+
+
+<div class="dropdown dropdown-download-buttons">
+  <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Download this page">
+    <i class="fas fa-download"></i>
+  </button>
+  <ul class="dropdown-menu">
+      
+      
+      
+      <li><a href="_sources/02-Micro-Decode.ipynb" target="_blank"
+   class="btn btn-sm btn-download-source-button dropdown-item"
+   title="Download source file"
+   data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file"></i>
+  </span>
+<span class="btn__text-container">.ipynb</span>
+</a>
+</li>
+      
+      
+      
+      
+      <li>
+<button onclick="window.print()"
+  class="btn btn-sm btn-download-pdf-button dropdown-item"
+  title="Print to PDF"
+  data-bs-placement="left" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-file-pdf"></i>
+  </span>
+<span class="btn__text-container">.pdf</span>
+</button>
+</li>
+      
+  </ul>
+</div>
+
+
+
+
+<button onclick="toggleFullScreen()"
+  class="btn btn-sm btn-fullscreen-button"
+  title="Fullscreen mode"
+  data-bs-placement="bottom" data-bs-toggle="tooltip"
+>
+  
+
+<span class="btn__icon-container">
+  <i class="fas fa-expand"></i>
+  </span>
+
+</button>
+
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script>
+
+
+<script>
+document.write(`
+  <button class="btn btn-sm pst-navbar-icon search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+  </button>
+`);
+</script>
+<button class="sidebar-toggle secondary-toggle btn btn-sm" title="Toggle secondary sidebar" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="fa-solid fa-list"></span>
+</button>
+</div></div>
+      
+    </div>
+  
+</div>
+</div>
+              
+              
+
+<div id="jb-print-docs-body" class="onlyprint">
+    <h1>Chapter 2. Upstream analysis (From raw sequencing data to Feature counts matrix and Pathway counts matrix)</h1>
+    <!-- Table of contents -->
+    <div id="print-main-content">
+        <div id="jb-print-toc">
+            
+            <div>
+                <h2> Contents </h2>
+            </div>
+            <nav aria-label="Page">
+                <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-pipeline">2.1 Basic Pipeline</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-importing-data-amd-examine-the-quality">2.1.1 Upstream: Importing data amd Examine the quality</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-denoise-sequences-selecting-sequence-variants">2.1.2 Upstream: Denoise sequences, selecting sequence variants</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-building-phylogenetic-tree">2.1.3 Upstream: Building Phylogenetic Tree</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-taxonomic-assignment">2.1.4 Upstream: Taxonomic assignment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#more">More</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functional-esimation-based-on-picrust2">2.2 Functional esimation based on PICRUST2</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-for-the-picrust2-installation">2.2.1 Prepare for the PICRUST2: Installation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#picrust2-full-pipeline">2.2.2 PICRUST2 full pipeline</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-description">2.2.3 Add description</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kegg-pathway-estimation">2.2.4 KEGG pathway estimation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-limitations">2.2.5 Key limitations</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downstream-analysis-suggestions-for-beginners">Downstream analysis: Suggestions for beginners</a></li>
+</ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-2-upstream-analysis-from-raw-sequencing-data-to-feature-counts-matrix-and-pathway-counts-matrix">
+<h1>Chapter 2. Upstream analysis (From raw sequencing data to Feature counts matrix and Pathway counts matrix)<a class="headerlink" href="#chapter-2-upstream-analysis-from-raw-sequencing-data-to-feature-counts-matrix-and-pathway-counts-matrix" title="Link to this heading">#</a></h1>
+<section id="basic-pipeline">
+<h2>2.1 Basic Pipeline<a class="headerlink" href="#basic-pipeline" title="Link to this heading">#</a></h2>
+<p>This chapter aims to guide you through the general pipeline of 16S analysis.</p>
+<p>QIIME2 has provided a quite user-friendly documents, check:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/overview/">https://docs.qiime2.org/2024.10/tutorials/overview/</a></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The tutorial’s command will depends on version: qiime2-2023.2. The code might be changed slightly when you use different version of QIIME2</p>
+</div>
+<section id="upstream-importing-data-amd-examine-the-quality">
+<h3>2.1.1 Upstream: Importing data amd Examine the quality<a class="headerlink" href="#upstream-importing-data-amd-examine-the-quality" title="Link to this heading">#</a></h3>
+<p>Import your sequencing data using <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">tools</span> <span class="pre">import</span></code>. I hope you have already noticed that we should use <code class="docutils literal notranslate"><span class="pre">manifest</span></code> to input multiple sequencing data into qiime2.</p>
+<ul class="simple">
+<li><p>Select the correct input type based on the tutorial. <a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/importing/#fastq-manifest-formats">Import</a></p></li>
+</ul>
+<p>After importation, Examine the sequencing quality with <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">demux</span> <span class="pre">summarize</span></code>:</p>
+<ul class="simple">
+<li><p>This summary offers visual insights into the distribution of sequence qualities at each position within the sequence data for the subsequent step in the pipeline. The sequence qualities guide decisions regarding certain sequence-processing parameters, including the truncation settings for the DADA2 denoising step.</p></li>
+<li><p>How to visualize?</p></li>
+</ul>
+</section>
+<section id="upstream-denoise-sequences-selecting-sequence-variants">
+<h3>2.1.2 Upstream: Denoise sequences, selecting sequence variants<a class="headerlink" href="#upstream-denoise-sequences-selecting-sequence-variants" title="Link to this heading">#</a></h3>
+<p>QIIME2 provided two different types of denoising strategy: ASVs and OTUs. Check chapter 3 if you interested in this strategy. <code class="docutils literal notranslate"><span class="pre">DADA2</span></code> is generally suggested for ASVs denosing, while QIIME2 also provides <code class="docutils literal notranslate"><span class="pre">debular</span></code> for the same purpose. You can search for the comparison’s between these two tools.</p>
+<p>Through <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">dada2</span> <span class="pre">denoise-xx</span></code>, we can use dada2 within the QIIME2 platform (xx depends whether your input file is paired-end or single-end).</p>
+<p>This command enables us to eliminate low-quality regions from the sequences. It also facilitates the removal of primers prior to denoising. DADA2 necessitates the removal of primers to avoid false positive detection of chimeras due to primer degeneracy.</p>
+<p>Important parameter:</p>
+<blockquote>
+<div><p>–p-trunc-len-f  : n truncates each forward read sequence at position n</p>
+</div></blockquote>
+<blockquote>
+<div><p>–p-trunc-len-r  : n truncates each reverse read sequence at position n</p>
+</div></blockquote>
+<blockquote>
+<div><p>–p-trim-left-f  : m trims off the first m bases of each forward read sequence</p>
+</div></blockquote>
+<blockquote>
+<div><p>–p-trim-left-r  : m trims off the first m bases of each reverse read sequence</p>
+</div></blockquote>
+<p>Check the result from last step to set the parameter used in this step.</p>
+<p>After the output, you will get the feature table (ASVs table) and their corresponding sequence (.fasta). But it has also been compacted in the QIIME2 (.qza).</p>
+<p>Try use <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">tools</span> <span class="pre">peek</span></code></p>
+<ul class="simple">
+<li><p>The feature_table.qza is a FeatureTable[Frequency] QIIME 2 artifact that contains counts (frequencies) of each
+unique sequence in each sample in the dataset.</p></li>
+<li><p>The sequence.qza is a FeatureData[Sequence] QIIME 2 artifact, which maps feature identifiers in the
+FeatureTable to the sequences they represent.</p></li>
+</ul>
+<p>Try use <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">feature-table</span> <span class="pre">summarize</span></code></p>
+<p>You can also mapping the feature’s sequence to NCBI database BLAST through <code class="docutils literal notranslate"><span class="pre">feature-table</span> <span class="pre">tabulate-seqs</span></code>. Have a try!</p>
+</section>
+<section id="upstream-building-phylogenetic-tree">
+<h3>2.1.3 Upstream: Building Phylogenetic Tree<a class="headerlink" href="#upstream-building-phylogenetic-tree" title="Link to this heading">#</a></h3>
+<p>We can build the phylogenetic tree based on the sequence difference among features. Phylogenetic diversity metrics like Faith’s pd, weighted and unweighted Unifrac distance require the phylogenetic tree to calculate.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">qiime</span><span class="w"> </span><span class="n">phylogeny</span><span class="w"> </span><span class="n">align</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">tree</span><span class="o">-</span><span class="n">mafft</span><span class="o">-</span><span class="n">fasttree</span><span class="w"> </span>\
+<span class="o">--</span><span class="n">i</span><span class="o">-</span><span class="n">sequences</span><span class="w"> </span><span class="n">rep</span><span class="o">-</span><span class="n">seqs.qza</span><span class="w"> </span>\<span class="w"> </span><span class="c1"># sequence of the feature (ASVs)</span>
+<span class="o">--</span><span class="n">o</span><span class="o">-</span><span class="n">alignment</span><span class="w"> </span><span class="n">aligned</span><span class="o">-</span><span class="n">rep</span><span class="o">-</span><span class="n">seqs.qza</span><span class="w"> </span>\
+<span class="o">--</span><span class="n">o</span><span class="o">-</span><span class="n">masked</span><span class="o">-</span><span class="n">alignment</span><span class="w"> </span><span class="n">masked</span><span class="o">-</span><span class="n">aligned</span><span class="o">-</span><span class="n">rep</span><span class="o">-</span><span class="n">seqs.qza</span><span class="w"> </span>\
+<span class="o">--</span><span class="n">o</span><span class="o">-</span><span class="n">tree</span><span class="w"> </span><span class="n">unrooted</span><span class="o">-</span><span class="n">tree.qza</span><span class="w"> </span>\
+<span class="o">--</span><span class="n">o</span><span class="o">-</span><span class="n">rooted</span><span class="o">-</span><span class="n">tree</span><span class="w"> </span><span class="n">rooted</span><span class="o">-</span><span class="n">tree.qza</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="n">Error</span> <span class="ow">in</span> <span class="n">parse</span><span class="p">(</span><span class="n">text</span> <span class="o">=</span> <span class="nb">input</span><span class="p">):</span> <span class="o">&lt;</span><span class="n">text</span><span class="o">&gt;</span><span class="p">:</span><span class="mi">1</span><span class="p">:</span><span class="mi">7</span><span class="p">:</span> <span class="n">unexpected</span> <span class="n">symbol</span>
+<span class="mi">1</span><span class="p">:</span> <span class="n">qiime</span> <span class="n">phylogeny</span>
+          <span class="o">^</span>
+<span class="ne">Traceback</span>:
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="upstream-taxonomic-assignment">
+<h3>2.1.4 Upstream: Taxonomic assignment<a class="headerlink" href="#upstream-taxonomic-assignment" title="Link to this heading">#</a></h3>
+<p>ASVs can be used to estimate the community diversity, while, to gain more biological insights, we should be more interested in what species or genus are presented in our data. So, to do this kind of taxonomic assignment, we should have a (1) a reference database, (2) an algorithm that we used to classify our sequence based on reference database.</p>
+<p>SLIVA and greengene2 was the main database used in 16S.</p>
+<p>In QIIME2, we have different types of pre-trained <code class="docutils literal notranslate"><span class="pre">naive-bayes</span></code> classifiers (click <a class="reference external" href="https://docs.qiime2.org/2024.10/data-resources/">here</a>. They mainly provide two types of the classifiers trained with (1) full-length of 16S. (2) V4 region of 16S.</p>
+<ul class="simple">
+<li><p>As discussed before, the choice of region will influence the resolution of your taxonomic assignment. The use of classifiers trained with different length will also influence the resolution. The more specific, the better.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="n">qiime</span><span class="w"> </span><span class="n">feature</span><span class="o">-</span><span class="n">classifier</span><span class="w"> </span><span class="n">classify</span><span class="o">-</span><span class="n">sklearn</span><span class="w"> </span>\
+<span class="o">--</span><span class="n">i</span><span class="o">-</span><span class="n">classifier</span><span class="w"> </span><span class="n">classifier.qza</span><span class="w"> </span>\<span class="w"> </span>
+<span class="o">--</span><span class="n">i</span><span class="o">-</span><span class="n">reads</span><span class="w"> </span><span class="n">rep</span><span class="o">-</span><span class="n">seqs.qza</span><span class="w"> </span>\<span class="w">           </span><span class="c1"># sequence of the feature (ASVs)</span>
+<span class="o">--</span><span class="n">o</span><span class="o">-</span><span class="n">classification</span><span class="w"> </span><span class="n">taxonomy.qza</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can also train your own classifiers using <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">feature-classifier</span> <span class="pre">fit-classifier-naive-bayes</span></code>. The developers of greengene2 also claimed in this <a class="reference external" href="https://forum.qiime2.org/t/introducing-greengenes2-2022-10/25291">website</a> that using the <code class="docutils literal notranslate"><span class="pre">de</span> <span class="pre">novo</span> <span class="pre">phylogeny</span></code> algorithm will have higher resolution in species level.</p>
+</div>
+</section>
+<section id="more">
+<h3>More<a class="headerlink" href="#more" title="Link to this heading">#</a></h3>
+<p>Check the official <a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/moving-pictures-usage/#introduction">“Moving pictures tutorial”</a>. Read From “Sequence quality control and feature table construction” to the end. You may find that QIIME2 could also be used to do alpha and beta diversity. However, I would still suggest to use R to do the downstream analysis including alpha and beta diversity.</p>
+</section>
+</section>
+<section id="functional-esimation-based-on-picrust2">
+<h2>2.2 Functional esimation based on PICRUST2<a class="headerlink" href="#functional-esimation-based-on-picrust2" title="Link to this heading">#</a></h2>
+<p>This chapter will introduce how can we use PICRUST2 to do functional estimation based on KEGG and Metacyc pathway.</p>
+<section id="prepare-for-the-picrust2-installation">
+<h3>2.2.1 Prepare for the PICRUST2: Installation<a class="headerlink" href="#prepare-for-the-picrust2-installation" title="Link to this heading">#</a></h3>
+<p>The installation will vary depends on your computer systems. Check:</p>
+<ul class="simple">
+<li><p>You can download picrust2 as the plugin of QIIME2: <a class="github reference external" href="https://github.com/picrust/picrust2/wiki/q2-picrust2-Tutorial">picrust/picrust2</a></p></li>
+<li><p>Or download picrust2 as a standalone version: <a class="github reference external" href="https://github.com/picrust/picrust2/wiki/Installation">picrust/picrust2</a>}</p></li>
+</ul>
+<p>Or you can directly use Galaxy for graphical interface, which is a web-based platform for accessible, reproducible, and scalable biomedical data analyses (free).</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://usegalaxy.eu/?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fiuc%2Fpicrust2_pipeline%2Fpicrust2_pipeline%2F2.5.1%20galaxy0">https://usegalaxy.eu/?tool_id=toolshed.g2.bx.psu.edu%2Frepos%2Fiuc%2Fpicrust2_pipeline%2Fpicrust2_pipeline%2F2.5.1 galaxy0</a></p></li>
+</ul>
+</section>
+<section id="picrust2-full-pipeline">
+<h3>2.2.2 PICRUST2 full pipeline<a class="headerlink" href="#picrust2-full-pipeline" title="Link to this heading">#</a></h3>
+<p>To use Galaxy platform for picrust2 prediction, you need to input a fasta file indicating the sequence of different feature you extracted from previous steps, and the feature-table.biom</p>
+<p>check the tutorial here:
+<a class="github reference external" href="https://github.com/picrust/picrust2/wiki/Full-pipeline-script">picrust/picrust2</a></p>
+<p>The key output files are:</p>
+<ul class="simple">
+<li><p>EC_metagenome_out - Folder containing unstratified EC number metagenome predictions (pred_metagenome_unstrat.tsv.gz), sequence table normalized by predicted 16S copy number abundances (seqtab_norm.tsv.gz), and the per-sample NSTI values weighted by the abundance of each ASV (weighted_nsti.tsv.gz).</p></li>
+<li><p>KO_metagenome_out - As EC_metagenome_out above, but for KO metagenomes.</p></li>
+<li><p>pathways_out - Folder containing predicted pathway abundances and coverages per-sample, based on predicted EC number abundances.</p></li>
+</ul>
+</section>
+<section id="add-description">
+<h3>2.2.3 Add description<a class="headerlink" href="#add-description" title="Link to this heading">#</a></h3>
+<p>Also, they only output the pathway ID and gene ID. You can find the description file which describing the ID, normally under where you installed picrust2: picrust2/default_files/description_mapfiles/.</p>
+<p>Or use <code class="docutils literal notranslate"><span class="pre">add_descriptions.py</span></code> from picrust2 to do this mission: <a class="github reference external" href="https://github.com/picrust/picrust2/wiki/Add-descriptions">picrust/picrust2</a></p>
+</section>
+<section id="kegg-pathway-estimation">
+<h3>2.2.4 KEGG pathway estimation<a class="headerlink" href="#kegg-pathway-estimation" title="Link to this heading">#</a></h3>
+<p>To estimate the KEGG pathway abundance from the KO_metagenome_out, we need to rerun the script using the mapfile from KEGG pathway to KO, like this:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-r notranslate"><div class="highlight"><pre><span></span><span class="w">  </span><span class="n">pathway_pipeline.py</span><span class="w"> </span><span class="o">-</span><span class="n">i</span><span class="w"> </span><span class="n">KO_metagenome_out</span><span class="o">/</span><span class="n">pred_metagenome_contrib.tsv.gz</span><span class="w"> </span>\<span class="w"> </span>
+<span class="w">    </span><span class="o">-</span><span class="n">o</span><span class="w"> </span><span class="n">KEGG_pathways_out</span><span class="w"> </span><span class="o">--</span><span class="n">no_regroup</span><span class="w"> </span>\
+<span class="w">    </span><span class="o">--</span><span class="n">map</span><span class="w"> </span><span class="n">KEGG_pathways_to_KO.tsv</span><span class="w">  </span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This map file has been deposited under the github Repository of this tutorial documents/KEGGdb. Please note that this mapfile was created through KEGG database, assessed from 2023-09-26.</p>
+</section>
+<section id="key-limitations">
+<h3>2.2.5 Key limitations<a class="headerlink" href="#key-limitations" title="Link to this heading">#</a></h3>
+<p>Read Key limitations <a class="reference external" href="https://github.com/picrust/picrust2/wiki/Key-Limitations">here</a></p>
+</section>
+</section>
+<section id="downstream-analysis-suggestions-for-beginners">
+<h2>Downstream analysis: Suggestions for beginners<a class="headerlink" href="#downstream-analysis-suggestions-for-beginners" title="Link to this heading">#</a></h2>
+<p>Check:</p>
+<ul class="simple">
+<li><p>see <a class="reference external" href="https://forum.qiime2.org/t/tutorial-integrating-qiime2-and-r-for-data-visualization-and-analysis-using-qiime2r/4121">qiime2R</a> to input the qiime2 artifacts to phyloseq</p></li>
+<li><p>see my tutorial (Chapter 3) for basic analysis using phyloseq</p></li>
+<li><p><a class="reference external" href="https://bioconductor.org/packages/release/bioc/vignettes/MicrobiotaProcess/inst/doc//MicrobiotaProcess.html#anatomy-of-a-mpse">MicrobiotaProcess</a> - Easy to use and impressive visualization.</p></li>
+<li><p><a class="reference external" href="https://chiliubio.github.io/microeco_tutorial/">microeco</a> - For a better visualization and comprehensive microbial community analysis.</p></li>
+</ul>
+<p>Metabolomics and integration</p>
+<ul class="simple">
+<li><p>MetaboanalystR (<a class="reference external" href="https://www.metaboanalyst.ca/docs/RTutorial.xhtml">https://www.metaboanalyst.ca/docs/RTutorial.xhtml</a>)</p></li>
+<li><p>Pathway analysis</p></li>
+</ul>
+</section>
+</section>
+
+    <script type="text/x-thebe-config">
+    {
+        requestKernel: true,
+        binderOptions: {
+            repo: "binder-examples/jupyter-stacks-datascience",
+            ref: "master",
+        },
+        codeMirrorConfig: {
+            theme: "abcdef",
+            mode: "r"
+        },
+        kernelOptions: {
+            name: "ir",
+            path: "./."
+        },
+        predefinedOutput: true
+    }
+    </script>
+    <script>kernelName = 'ir'</script>
+
+                </article>
+              
+
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="01-Micro-Decode.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Chapter 1. Basic materials for 16S analysis</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="03-Micro-Decode.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Chapter 3. Introduction to Microbiome Analysis</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> Contents
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-pipeline">2.1 Basic Pipeline</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-importing-data-amd-examine-the-quality">2.1.1 Upstream: Importing data amd Examine the quality</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-denoise-sequences-selecting-sequence-variants">2.1.2 Upstream: Denoise sequences, selecting sequence variants</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-building-phylogenetic-tree">2.1.3 Upstream: Building Phylogenetic Tree</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-taxonomic-assignment">2.1.4 Upstream: Taxonomic assignment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#more">More</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functional-esimation-based-on-picrust2">2.2 Functional esimation based on PICRUST2</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prepare-for-the-picrust2-installation">2.2.1 Prepare for the PICRUST2: Installation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#picrust2-full-pipeline">2.2.2 PICRUST2 full pipeline</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-description">2.2.3 Add description</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kegg-pathway-estimation">2.2.4 KEGG pathway estimation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-limitations">2.2.5 Key limitations</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downstream-analysis-suggestions-for-beginners">Downstream analysis: Suggestions for beginners</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+<div class="bd-footer-content__inner container">
+  
+  <div class="footer-item">
+    
+<p class="component-author">
+By Congjia Chen
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+
+  <p class="copyright">
+    
+      © Copyright 2023.
+      <br/>
+    
+  </p>
+
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+  <div class="footer-item">
+    
+  </div>
+  
+</div>
+          </footer>
+        
+
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+  </footer>
+  </body>
+</html>
