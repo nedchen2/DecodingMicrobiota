@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>Chapter 2. Upstream analysis (From raw sequencing data to Feature counts matrix and Pathway counts matrix) &#8212; Decoding Microbiota</title>
+    <title>Chapter 2. Upstream analysis &#8212; Decoding Microbiota</title>
   
   
   
@@ -181,7 +181,7 @@
         </ul>
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="01-Micro-Decode.html">Chapter 1. Basic materials for 16S analysis</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 2. Upstream analysis (From raw sequencing data to Feature counts matrix and Pathway counts matrix)</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 2. Upstream analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="03-Micro-Decode.html">Chapter 3. Introduction to Microbiome Analysis</a></li>
 </ul>
 
@@ -368,7 +368,7 @@ document.write(`
               
 
 <div id="jb-print-docs-body" class="onlyprint">
-    <h1>Chapter 2. Upstream analysis (From raw sequencing data to Feature counts matrix and Pathway counts matrix)</h1>
+    <h1>Chapter 2. Upstream analysis</h1>
     <!-- Table of contents -->
     <div id="print-main-content">
         <div id="jb-print-toc">
@@ -391,7 +391,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#picrust2-full-pipeline">2.2.2 PICRUST2 full pipeline</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-description">2.2.3 Add description</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kegg-pathway-estimation">2.2.4 KEGG pathway estimation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-limitations">2.2.5 Key limitations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-limitations-of-picrust2">2.2.5 Key limitations of PICRUST2</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downstream-analysis-suggestions-for-beginners">Downstream analysis: Suggestions for beginners</a></li>
@@ -406,8 +406,11 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="chapter-2-upstream-analysis-from-raw-sequencing-data-to-feature-counts-matrix-and-pathway-counts-matrix">
-<h1>Chapter 2. Upstream analysis (From raw sequencing data to Feature counts matrix and Pathway counts matrix)<a class="headerlink" href="#chapter-2-upstream-analysis-from-raw-sequencing-data-to-feature-counts-matrix-and-pathway-counts-matrix" title="Link to this heading">#</a></h1>
+  <section class="tex2jax_ignore mathjax_ignore" id="chapter-2-upstream-analysis">
+<h1>Chapter 2. Upstream analysis<a class="headerlink" href="#chapter-2-upstream-analysis" title="Link to this heading">#</a></h1>
+<ul class="simple">
+<li><p>(From raw sequencing data to Feature counts matrix and Pathway counts matrix)</p></li>
+</ul>
 <section id="basic-pipeline">
 <h2>2.1 Basic Pipeline<a class="headerlink" href="#basic-pipeline" title="Link to this heading">#</a></h2>
 <p>This chapter aims to guide you through the general pipeline of 16S analysis.</p>
@@ -423,7 +426,8 @@ document.write(`
 <h3>2.1.1 Upstream: Importing data amd Examine the quality<a class="headerlink" href="#upstream-importing-data-amd-examine-the-quality" title="Link to this heading">#</a></h3>
 <p>Import your sequencing data using <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">tools</span> <span class="pre">import</span></code>. I hope you have already noticed that we should use <code class="docutils literal notranslate"><span class="pre">manifest</span></code> to input multiple sequencing data into qiime2.</p>
 <ul class="simple">
-<li><p>Select the correct input type based on the tutorial. <a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/importing/#fastq-manifest-formats">Import</a></p></li>
+<li><p>Select the correct input type based on the tutorial. Check <a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/importing/#fastq-manifest-formats">here</a>.</p></li>
+<li><p>Mind that your sample id or name should be the same as that in sample metadata. However, in this case, you do not need to keep consistent with the sample name within original fastq file name.</p></li>
 </ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>tools<span class="w"> </span>import<span class="w">   </span>--type<span class="w"> </span><span class="s1">&#39;SampleData[PairedEndSequencesWithQuality]&#39;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--input-path<span class="w"> </span>manifest.tsv<span class="w">  </span><span class="se">\</span>
@@ -431,10 +435,11 @@ document.write(`
 <span class="w">  </span>--input-format<span class="w"> </span>PairedEndFastqManifestPhred33V2
 </pre></div>
 </div>
-<p>After importation, Examine the sequencing quality with <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">demux</span> <span class="pre">summarize</span></code>:</p>
+<p>After importation, Examine the sequencing quality <code class="docutils literal notranslate"><span class="pre">Interactive</span> <span class="pre">Quality</span> <span class="pre">Plot</span></code> with <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">demux</span> <span class="pre">summarize</span></code>:</p>
 <ul class="simple">
 <li><p>This summary offers visual insights into the distribution of sequence qualities at each position within the sequence data for the subsequent step in the pipeline. The sequence qualities guide decisions regarding certain sequence-processing parameters, including the truncation settings for the DADA2 denoising step.</p></li>
-<li><p>How to visualize?</p></li>
+<li><p>Click <a class="reference external" href="https://view.qiime2.org/visualization/?src=https://docs.qiime2.org/2024.10/data/tutorials/moving-pictures-usage/demux.qzv">here</a> for an example</p></li>
+<li><p>How to visualize your data?</p></li>
 </ul>
 </section>
 <section id="upstream-denoise-sequences-selecting-sequence-variants">
@@ -455,7 +460,21 @@ document.write(`
 <blockquote>
 <div><p>–p-trim-left-r  : m trims off the first m bases of each reverse read sequence</p>
 </div></blockquote>
-<p>Check the result from last step to set the parameter used in this step. “TBD”: To be determined</p>
+<div class="tip admonition">
+<p class="admonition-title">Question</p>
+<ul class="simple">
+<li><p>Based on the plots you see in demux.qzv, * Click <a class="reference external" href="https://view.qiime2.org/visualization/?src=https://docs.qiime2.org/2024.10/data/tutorials/moving-pictures-usage/demux.qzv">here</a> for an example, what values would you choose for <code class="docutils literal notranslate"><span class="pre">--p-trunc-len</span></code> and <code class="docutils literal notranslate"><span class="pre">--p-trim-left</span></code> in this case?</p></li>
+</ul>
+</div>
+<div class="tip dropdown admonition">
+<p class="admonition-title">Answer</p>
+<p>In this example, we see that the quality of the initial bases seems to be high, so we won’t trim any bases from the beginning of the sequences. The quality seems to drop off around position 120, so we’ll truncate our sequences at 120 bases.</p>
+</div>
+<p>Check the result from last step to set the parameter used in this step.</p>
+<ul class="simple">
+<li><p>“TBD”: To be determined</p></li>
+<li><p>Mind that you can trim the primer sequence through <code class="docutils literal notranslate"><span class="pre">--p-trim-left</span></code></p></li>
+</ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>dada2<span class="w"> </span>denoise-paired<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--i-demultiplexed-seqs<span class="w"> </span>paired-end-demux.qza<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--p-trunc-len-f<span class="w"> </span><span class="s2">&quot;TBD&quot;</span><span class="w"> </span><span class="se">\</span>
@@ -471,13 +490,15 @@ document.write(`
 <p>After the output, you will get the feature table (ASVs table) and their corresponding sequence (.fasta). But it has also been compacted in the QIIME2 (.qza).</p>
 <p>Try use <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">tools</span> <span class="pre">peek</span></code></p>
 <ul class="simple">
-<li><p>The feature_table.qza is a FeatureTable[Frequency] QIIME 2 artifact that contains counts (frequencies) of each
+<li><p>The feature_table.qza is a <code class="docutils literal notranslate"><span class="pre">FeatureTable[Frequency]</span></code> QIIME 2 artifact that contains counts (frequencies) of each
 unique sequence in each sample in the dataset.</p></li>
-<li><p>The sequence.qza is a FeatureData[Sequence] QIIME 2 artifact, which maps feature identifiers in the
+<li><p>The sequence.qza is a <code class="docutils literal notranslate"><span class="pre">FeatureData[Sequence]</span></code> QIIME 2 artifact, which maps feature identifiers in the
 FeatureTable to the sequences they represent.</p></li>
 </ul>
 <p>Try use <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">feature-table</span> <span class="pre">summarize</span></code></p>
-<p>You can also mapping the feature’s sequence to NCBI database BLAST through <code class="docutils literal notranslate"><span class="pre">feature-table</span> <span class="pre">tabulate-seqs</span></code>. Have a try!</p>
+<ul class="simple">
+<li><p>You can also mapping the feature’s sequence to NCBI database BLAST through <code class="docutils literal notranslate"><span class="pre">feature-table</span> <span class="pre">tabulate-seqs</span></code>. Have a try on the example <a class="reference external" href="https://view.qiime2.org/visualization/?src=https://docs.qiime2.org/2024.10/data/tutorials/moving-pictures-usage/rep-seqs.qzv">here</a>!</p></li>
+</ul>
 </section>
 <section id="upstream-building-phylogenetic-tree">
 <h3>2.1.3 Upstream: Building Phylogenetic Tree<a class="headerlink" href="#upstream-building-phylogenetic-tree" title="Link to this heading">#</a></h3>
@@ -494,10 +515,10 @@ FeatureTable to the sequences they represent.</p></li>
 <section id="upstream-taxonomic-assignment">
 <h3>2.1.4 Upstream: Taxonomic assignment<a class="headerlink" href="#upstream-taxonomic-assignment" title="Link to this heading">#</a></h3>
 <p>ASVs can be used to estimate the community diversity, while, to gain more biological insights, we should be more interested in what species or genus are presented in our data. So, to do this kind of taxonomic assignment, we should have a (1) a reference database, (2) an algorithm that we used to classify our sequence based on reference database.</p>
-<p>SLIVA and greengene2 was the main database used in 16S.</p>
-<p>In QIIME2, we have different types of pre-trained <code class="docutils literal notranslate"><span class="pre">naive-bayes</span></code> classifiers (click <a class="reference external" href="https://docs.qiime2.org/2024.10/data-resources/">here</a>. They mainly provide two types of the classifiers trained with (1) full-length of 16S. (2) V4 region of 16S.</p>
+<p>SILVA and greengene2 was the main database used in 16S.</p>
+<p>In QIIME2, we have different types of pre-trained <code class="docutils literal notranslate"><span class="pre">naive-bayes</span></code> classifiers (click <a class="reference external" href="https://docs.qiime2.org/2024.10/data-resources/">here</a> ). Those classifiers were mainly trained with (1) full-length of 16S region. (2) V4 region of 16S.</p>
 <ul class="simple">
-<li><p>As discussed before, the choice of region will influence the resolution of your taxonomic assignment. The use of classifiers trained with different length will also influence the resolution. The more specific, the better.</p></li>
+<li><p>As discussed before, the choice of region to amplify will influence the resolution of your taxonomic assignment. The use of classifiers trained with different region of sequence will also influence the resolution. The more specific, the better.</p></li>
 </ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>feature-classifier<span class="w"> </span>classify-sklearn<span class="w"> </span><span class="se">\</span>
 --i-classifier<span class="w"> </span>classifier.qza<span class="w"> </span><span class="se">\ </span>
@@ -513,6 +534,15 @@ FeatureTable to the sequences they represent.</p></li>
 <section id="more">
 <h3>More<a class="headerlink" href="#more" title="Link to this heading">#</a></h3>
 <p>Check the official <a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/moving-pictures-usage/#introduction">“Moving pictures tutorial”</a>. Read From “Sequence quality control and feature table construction” to the end. You may find that QIIME2 could also be used to do alpha and beta diversity. However, I would still suggest to use R to do the downstream analysis including alpha and beta diversity.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Check Points (End of the week)</p>
+<ul class="simple">
+<li><p>Import?</p></li>
+<li><p>Feature Table?</p></li>
+<li><p>Taxonomic bar chart?</p></li>
+</ul>
+</div>
 </section>
 </section>
 <section id="functional-esimation-based-on-picrust2">
@@ -532,15 +562,38 @@ FeatureTable to the sequences they represent.</p></li>
 </section>
 <section id="picrust2-full-pipeline">
 <h3>2.2.2 PICRUST2 full pipeline<a class="headerlink" href="#picrust2-full-pipeline" title="Link to this heading">#</a></h3>
-<p>To use Galaxy platform for picrust2 prediction, you need to input a fasta file indicating the sequence of different feature you extracted from previous steps, and the feature-table.biom</p>
+<p>To use Galaxy platform for picrust2 prediction, you need to input</p>
+<ul class="simple">
+<li><p>a fasta file indicating the sequence of different feature you extracted from previous steps,</p></li>
+<li><p>and the feature-table.biom</p></li>
+</ul>
+<p>And for the standalone version as well,</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>picrust2_pipeline.py<span class="w"> </span>-s<span class="w"> </span>dna-sequences.fasta<span class="w"> </span><span class="se">\ </span><span class="w">  </span><span class="c1">#input fasta </span>
+-i<span class="w"> </span>feature-table.biom<span class="w"> </span><span class="se">\ </span><span class="w">     </span><span class="c1"># input feature table</span>
+-o<span class="w"> </span>picrust2_out_pipeline<span class="w"> </span><span class="se">\ </span><span class="w">   </span><span class="c1">#output to the directed directory</span>
+-p<span class="w"> </span><span class="m">6</span><span class="w"> </span>--stratified<span class="w"> </span>--remove_intermediate<span class="w"> </span>--verbose
+</pre></div>
+</div>
 <p>check the tutorial here:
 <a class="github reference external" href="https://github.com/picrust/picrust2/wiki/Full-pipeline-script">picrust/picrust2</a></p>
 <p>The key output files are:</p>
-<ul class="simple">
-<li><p>EC_metagenome_out - Folder containing unstratified EC number metagenome predictions (pred_metagenome_unstrat.tsv.gz), sequence table normalized by predicted 16S copy number abundances (seqtab_norm.tsv.gz), and the per-sample NSTI values weighted by the abundance of each ASV (weighted_nsti.tsv.gz).</p></li>
-<li><p>KO_metagenome_out - As EC_metagenome_out above, but for KO metagenomes.</p></li>
-<li><p>pathways_out - Folder containing predicted pathway abundances and coverages per-sample, based on predicted EC number abundances.</p></li>
-</ul>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+EC_metagenome_out</label><div class="sd-tab-content docutils">
+<p>Folder containing unstratified EC number metagenome predictions (pred_metagenome_unstrat.tsv.gz), sequence table normalized by predicted 16S copy number abundances (seqtab_norm.tsv.gz), and the per-sample NSTI values weighted by the abundance of each ASV (weighted_nsti.tsv.gz).</p>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+KO_metagenome_out</label><div class="sd-tab-content docutils">
+<p>As EC_metagenome_out above, but for KO metagenomes.</p>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+pathways_out</label><div class="sd-tab-content docutils">
+<p>Folder containing predicted pathway abundances and coverages per-sample, based on predicted EC number abundances.</p>
+</div>
+</div>
 </section>
 <section id="add-description">
 <h3>2.2.3 Add description<a class="headerlink" href="#add-description" title="Link to this heading">#</a></h3>
@@ -550,16 +603,33 @@ FeatureTable to the sequences they represent.</p></li>
 <section id="kegg-pathway-estimation">
 <h3>2.2.4 KEGG pathway estimation<a class="headerlink" href="#kegg-pathway-estimation" title="Link to this heading">#</a></h3>
 <p>To estimate the KEGG pathway abundance from the KO_metagenome_out, we need to rerun the script using the mapfile from KEGG pathway to KO, like this:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pathway_pipeline.py<span class="w"> </span>-i<span class="w"> </span>KO_metagenome_out/pred_metagenome_contrib.tsv.gz<span class="w"> </span><span class="se">\ </span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pathway_pipeline.py<span class="w"> </span>-i<span class="w"> </span>picrust2_out_pipeline/KO_metagenome_out/pred_metagenome_contrib.tsv.gz<span class="w"> </span><span class="se">\ </span>
 <span class="w">    </span>-o<span class="w"> </span>KEGG_pathways_out<span class="w"> </span>--no_regroup<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--map<span class="w"> </span>KEGG_pathways_to_KO.tsv<span class="w">  </span>
+--map<span class="w"> </span>KEGG_pathways_to_KO.tsv<span class="w">  </span>
 </pre></div>
 </div>
-<p>This map file has been deposited under the github Repository of this tutorial documents/KEGGdb. Please note that this mapfile was created through KEGG database, assessed from 2023-09-26.</p>
-</section>
-<section id="key-limitations">
-<h3>2.2.5 Key limitations<a class="headerlink" href="#key-limitations" title="Link to this heading">#</a></h3>
+<p>This map file has been deposited <a class="reference external" href="https://github.com/nedchen2/DecodingMicrobiota/tree/main/document/KEGGdb">here</a>. Right click to Copy the link to <a class="reference external" href="https://kinolien.github.io/gitzip/">gitzip</a> and download it.</p>
+<ul class="simple">
+<li><p>Please note that this mapfile was created through KEGG database, assessed from 2023-09-26.</p></li>
+</ul>
+<aside class="margin sidebar">
+<p class="sidebar-title">Note</p>
+<ul class="simple">
+<li><p>No need to input <code class="docutils literal notranslate"><span class="pre">Github</span> <span class="pre">API</span> <span class="pre">Access</span> <span class="pre">Token</span></code>!</p></li>
+</ul>
+</aside>
+<img src="./graphics/Gitzip.png" alt="gitzip.png" width="500px"></section>
+<section id="key-limitations-of-picrust2">
+<h3>2.2.5 Key limitations of PICRUST2<a class="headerlink" href="#key-limitations-of-picrust2" title="Link to this heading">#</a></h3>
 <p>Read Key limitations <a class="reference external" href="https://github.com/picrust/picrust2/wiki/Key-Limitations">here</a></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Check Points (End of the week)</p>
+<ul class="simple">
+<li><p>PATHWAY TABLE?</p></li>
+<li><p>Description?</p></li>
+</ul>
+</div>
 </section>
 </section>
 <section id="downstream-analysis-suggestions-for-beginners">
@@ -576,6 +646,12 @@ FeatureTable to the sequences they represent.</p></li>
 <li><p>MetaboanalystR (<a class="reference external" href="https://www.metaboanalyst.ca/docs/RTutorial.xhtml">https://www.metaboanalyst.ca/docs/RTutorial.xhtml</a>)</p></li>
 <li><p>Pathway analysis</p></li>
 </ul>
+<dl class="simple glossary">
+<dt id="term-ASVs">ASVs<a class="headerlink" href="#term-ASVs" title="Link to this term">#</a></dt><dd><p>Amplicon Sequence Variants (ASVs)</p>
+</dd>
+<dt id="term-Map-file">Map file<a class="headerlink" href="#term-Map-file" title="Link to this term">#</a></dt><dd><p>In bioinformatics, we mainly called some files could be used to represent some relationships between objects as map files.</p>
+</dd>
+</dl>
 </section>
 </section>
 
@@ -656,7 +732,7 @@ FeatureTable to the sequences they represent.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#picrust2-full-pipeline">2.2.2 PICRUST2 full pipeline</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-description">2.2.3 Add description</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kegg-pathway-estimation">2.2.4 KEGG pathway estimation</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-limitations">2.2.5 Key limitations</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-limitations-of-picrust2">2.2.5 Key limitations of PICRUST2</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downstream-analysis-suggestions-for-beginners">Downstream analysis: Suggestions for beginners</a></li>
