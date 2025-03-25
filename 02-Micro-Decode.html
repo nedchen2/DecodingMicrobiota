@@ -428,7 +428,7 @@ document.write(`
 <p>Import your sequencing data using <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">tools</span> <span class="pre">import</span></code>. I hope you have already noticed that we should use <code class="docutils literal notranslate"><span class="pre">manifest</span></code> to input multiple sequencing data into qiime2.</p>
 <ul class="simple">
 <li><p>Select the correct input type based on the tutorial. Check <a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/importing/#fastq-manifest-formats">here</a>.</p></li>
-<li><p>Mind that your sample id or name should be the same as that in sample metadata. However, in this case, you do not need to keep consistent with the sample name within original fastq file name.</p></li>
+<li><p>Mind that your sample id or name should be the same as that in sample metadata (mentioned in chapter 1).</p></li>
 </ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>tools<span class="w"> </span>import<span class="w">   </span>--type<span class="w"> </span><span class="s1">&#39;SampleData[PairedEndSequencesWithQuality]&#39;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--input-path<span class="w"> </span>manifest.tsv<span class="w">  </span><span class="se">\</span>
@@ -443,11 +443,10 @@ document.write(`
 </ul>
 </div>
 <p>After importation, Examine the sequencing quality <code class="docutils literal notranslate"><span class="pre">Interactive</span> <span class="pre">Quality</span> <span class="pre">Plot</span></code> with <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">demux</span> <span class="pre">summarize</span></code>:</p>
-<ul class="simple">
-<li><p>This summary offers visual insights into the distribution of sequence qualities at each position within the sequence data for the subsequent step in the pipeline. The sequence qualities guide decisions regarding certain sequence-processing parameters, including the truncation settings for the DADA2 denoising step.</p></li>
-<li><p>Click <a class="reference external" href="https://view.qiime2.org/visualization/?src=https://docs.qiime2.org/2024.10/data/tutorials/moving-pictures-usage/demux.qzv">here</a> for an example</p></li>
-<li><p>How to visualize your data?</p></li>
-</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># make a report to judge the base length to trim</span>
+qiime<span class="w"> </span>demux<span class="w"> </span>summarize<span class="w"> </span>--i-data<span class="w"> </span>paired-end-demux.qza<span class="w"> </span>--o-visualization<span class="w"> </span>paired-end-demux.qzv
+</pre></div>
+</div>
 </section>
 <section id="upstream-adapter-primer-barcodes-trimming">
 <h3>2.1.2 Upstream: Adapter/Primer/Barcodes trimming<a class="headerlink" href="#upstream-adapter-primer-barcodes-trimming" title="Link to this heading">#</a></h3>
@@ -466,6 +465,14 @@ document.write(`
 </pre></div>
 </div>
 <p>The barcode will also be trimed, as long as the primer was detected. Check the trimmed clean data again!</p>
+<p>You can also check the quality again!</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># make a report to judge the base length to trim</span>
+qiime<span class="w"> </span>demux<span class="w"> </span>summarize<span class="w"> </span>--i-data<span class="w"> </span>Primer_trimmed-seqs.qza<span class="w"> </span>--o-visualization<span class="w"> </span>Primer_trimmed-seqs.qzv
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>This summary offers visual insights into the distribution of sequence qualities at each position within the sequence data for the subsequent step in the pipeline. The sequence qualities guide decisions regarding certain sequence-processing parameters, including the truncation settings for the DADA2 denoising step.</p></li>
+</ul>
 </section>
 <section id="upstream-denoise-sequences-selecting-sequence-variants">
 <h3>2.1.3 Upstream: Denoise sequences, selecting sequence variants<a class="headerlink" href="#upstream-denoise-sequences-selecting-sequence-variants" title="Link to this heading">#</a></h3>
@@ -485,10 +492,13 @@ document.write(`
 <blockquote>
 <div><p>–p-trim-left-r  : m trims off the first m bases of each reverse read sequence</p>
 </div></blockquote>
+<ul class="simple">
+<li><p>Click <a class="reference external" href="https://view.qiime2.org/visualization/?src=https://docs.qiime2.org/2024.10/data/tutorials/moving-pictures-usage/demux.qzv">demux.qzv</a> for an example</p></li>
+</ul>
 <div class="tip admonition">
 <p class="admonition-title">Question</p>
 <ul class="simple">
-<li><p>Based on the plots you see in demux.qzv, * Click <a class="reference external" href="https://view.qiime2.org/visualization/?src=https://docs.qiime2.org/2024.10/data/tutorials/moving-pictures-usage/demux.qzv">here</a> for an example, what values would you choose for <code class="docutils literal notranslate"><span class="pre">--p-trunc-len</span></code> and <code class="docutils literal notranslate"><span class="pre">--p-trim-left</span></code> in this case?</p></li>
+<li><p>Based on the plots you see in demux.qzv, what values would you choose for <code class="docutils literal notranslate"><span class="pre">--p-trunc-len</span></code> and <code class="docutils literal notranslate"><span class="pre">--p-trim-left</span></code> in this case?</p></li>
 </ul>
 </div>
 <div class="tip dropdown admonition">
@@ -497,7 +507,7 @@ document.write(`
 </div>
 <p>Check the result from last step to set the parameter used in this step.</p>
 <ul class="simple">
-<li><p>“TBD”: To be determined by your own results</p></li>
+<li><p>“TBD”: To be determined by your own results. In NEEN project, we set “TBD” as zero, as the quality of the sequence was generally good.</p></li>
 <li><p>Mind that you can also trim the primer sequence through <code class="docutils literal notranslate"><span class="pre">--p-trim-left</span></code>. But it is not generally recommanded</p></li>
 </ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>dada2<span class="w"> </span>denoise-paired<span class="w"> </span><span class="se">\</span>
@@ -554,7 +564,7 @@ FeatureTable to the sequences they represent.</p></li>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You can also train your own classifiers using <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">feature-classifier</span> <span class="pre">fit-classifier-naive-bayes</span></code>. You may find more about how to train your own classifiers, <a class="reference external" href="https://github.com/nedchen2/DecodingMicrobiota/blob/main/code/bs.train_classifier.sh">here</a>. This is the code that I write for another project of V3-V4 REGION using SILVA 138.1 database. It will mainly depends on qiime2 plug-in <code class="docutils literal notranslate"><span class="pre">rescript</span> </code>. Check <a class="reference external" href="https://forum.qiime2.org/t/processing-filtering-and-evaluating-the-silva-database-and-other-reference-sequence-data-with-rescript/15494">here</a> for the official documents from the developer.</p>
+<p>You can also train your own classifiers using <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">feature-classifier</span> <span class="pre">fit-classifier-naive-bayes</span></code>. You may find more about how to train your own classifiers, <a class="reference external" href="https://github.com/nedchen2/DecodingMicrobiota/blob/main/code/bs.train_classifier.sh">here</a>. This is the code that I wrote for another project of V3-V4 REGION using SILVA 138.1 database. It will mainly depends on qiime2 plug-in <code class="docutils literal notranslate"><span class="pre">rescript</span> </code>. Check <a class="reference external" href="https://forum.qiime2.org/t/processing-filtering-and-evaluating-the-silva-database-and-other-reference-sequence-data-with-rescript/15494">here</a> for the official documents from the developer.</p>
 <p>The developers of greengene2 also claimed in this <a class="reference external" href="https://forum.qiime2.org/t/introducing-greengenes2-2022-10/25291">website</a> that using the <code class="docutils literal notranslate"><span class="pre">de</span> <span class="pre">novo</span> <span class="pre">phylogeny</span></code> algorithm will have higher resolution in species level.</p>
 </div>
 </section>
@@ -596,12 +606,12 @@ FeatureTable to the sequences they represent.</p></li>
 </ul>
 <p>While for QIIME2 plugin, it can directly input the</p>
 <ul class="simple">
-<li><p>ASV count table (table.qza)</p></li>
-<li><p>ASV representative sequences (rep-seqs.qza)</p></li>
+<li><p>Feature table QIIME2 artifact (table.qza -  ASV count table )</p></li>
+<li><p>Feature sequence QIIME2 artifact (rep-seqs.qza - ASV representative sequences)</p></li>
 </ul>
-<p>To get the dna-sequences.fasta AND feature-table.biom from the QIIME2 object</p>
+<p>To get the dna-sequences.fasta AND feature-table.biom from the QIIME2 artifact</p>
 <ul class="simple">
-<li><p>You can use <code class="docutils literal notranslate"><span class="pre">qiime2</span> <span class="pre">export</span></code></p></li>
+<li><p>You can use <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">tools</span> <span class="pre">export</span></code></p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
