@@ -380,9 +380,10 @@ document.write(`
                 <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-pipeline">2.1 Basic Pipeline</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-importing-data-amd-examine-the-quality">2.1.1 Upstream: Importing data amd Examine the quality</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-denoise-sequences-selecting-sequence-variants">2.1.2 Upstream: Denoise sequences, selecting sequence variants</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-building-phylogenetic-tree">2.1.3 Upstream: Building Phylogenetic Tree</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-taxonomic-assignment">2.1.4 Upstream: Taxonomic assignment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-adapter-primer-barcodes-trimming">2.1.2 Upstream: Adapter/Primer/Barcodes trimming</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-denoise-sequences-selecting-sequence-variants">2.1.3 Upstream: Denoise sequences, selecting sequence variants</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-building-phylogenetic-tree">2.1.4 Upstream: Building Phylogenetic Tree</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-taxonomic-assignment">2.1.5 Upstream: Taxonomic assignment</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#more">More</a></li>
 </ul>
 </li>
@@ -448,8 +449,25 @@ document.write(`
 <li><p>How to visualize your data?</p></li>
 </ul>
 </section>
+<section id="upstream-adapter-primer-barcodes-trimming">
+<h3>2.1.2 Upstream: Adapter/Primer/Barcodes trimming<a class="headerlink" href="#upstream-adapter-primer-barcodes-trimming" title="Link to this heading">#</a></h3>
+<p>The artificial sequence (Adapter/Primer/Barcodes) will significantly influence the results of the classifiers, therefore it is essential to check and trim the sequence. We will apply cutadapt’s QIIM2 plugin for this purpose.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>cutadapt<span class="w"> </span>trim-paired<span class="w"> </span><span class="se">\ </span><span class="w">                 </span><span class="c1"># again, if you are single end data, change the command</span>
+<span class="w">    </span>--p-cores<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--i-demultiplexed-sequences<span class="w"> </span>../results/a.raw_data/paired-end-demux.qza<span class="se">\</span>
+<span class="w">    </span>--p-front-f<span class="w"> </span>GTGCCAGCMGCCGCGGTAA<span class="w"> </span><span class="se">\ </span><span class="w">        </span><span class="c1"># refers to the primer sequence of forward</span>
+<span class="w">    </span>--p-front-r<span class="w"> </span>GGACTACNNGGGTATCTAAT<span class="w"> </span><span class="se">\ </span><span class="w">       </span><span class="c1"># refers to the primer sequence of reverse</span>
+<span class="w">    </span>--p-error-rate<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span><span class="se">\ </span><span class="w">                     </span><span class="c1"># We only 0.1 rate of error</span>
+<span class="w">    </span>--p-overlap<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--p-match-read-wildcards<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--p-match-adapter-wildcards<span class="w"> </span><span class="se">\ </span><span class="w">            </span>
+<span class="w">    </span>--p-discard-untrimmed<span class="w"> </span><span class="se">\ </span><span class="w">                  </span><span class="c1"># If no primer detected, meanings there might be some errors</span>
+<span class="w">    </span>--o-trimmed-sequences<span class="w"> </span>../results/a.raw_data/Primer_trimmed-seqs.qza
+</pre></div>
+</div>
+</section>
 <section id="upstream-denoise-sequences-selecting-sequence-variants">
-<h3>2.1.2 Upstream: Denoise sequences, selecting sequence variants<a class="headerlink" href="#upstream-denoise-sequences-selecting-sequence-variants" title="Link to this heading">#</a></h3>
+<h3>2.1.3 Upstream: Denoise sequences, selecting sequence variants<a class="headerlink" href="#upstream-denoise-sequences-selecting-sequence-variants" title="Link to this heading">#</a></h3>
 <p>QIIME2 provided two different types of denoising strategy: ASVs and OTUs. Check chapter 3 if you interested in this strategy. <code class="docutils literal notranslate"><span class="pre">DADA2</span></code> is generally suggested for ASVs denosing, while QIIME2 also provides <code class="docutils literal notranslate"><span class="pre">debular</span></code> for the same purpose. You can search for the comparison’s between these two tools.</p>
 <p>Through <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">dada2</span> <span class="pre">denoise-xx</span></code>, we can use dada2 within the QIIME2 platform (xx depends whether your input file is paired-end or single-end).</p>
 <p>This command enables us to eliminate low-quality regions from the sequences. It also facilitates the removal of primers prior to denoising. DADA2 necessitates the removal of primers to avoid false positive detection of chimeras due to primer degeneracy.</p>
@@ -478,11 +496,11 @@ document.write(`
 </div>
 <p>Check the result from last step to set the parameter used in this step.</p>
 <ul class="simple">
-<li><p>“TBD”: To be determined</p></li>
-<li><p>Mind that you can trim the primer sequence through <code class="docutils literal notranslate"><span class="pre">--p-trim-left</span></code></p></li>
+<li><p>“TBD”: To be determined by your own results</p></li>
+<li><p>Mind that you can also trim the primer sequence through <code class="docutils literal notranslate"><span class="pre">--p-trim-left</span></code>. But it is not generally recommanded</p></li>
 </ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>dada2<span class="w"> </span>denoise-paired<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--i-demultiplexed-seqs<span class="w"> </span>paired-end-demux.qza<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--i-demultiplexed-seqs<span class="w"> </span>Primer_trimmed-seqs.qza<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--p-trunc-len-f<span class="w"> </span><span class="s2">&quot;TBD&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--p-trunc-len-r<span class="w"> </span><span class="s2">&quot;TBD&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--p-trim-left-f<span class="w"> </span><span class="s2">&quot;TBD&quot;</span><span class="w"> </span><span class="se">\</span>
@@ -507,7 +525,7 @@ FeatureTable to the sequences they represent.</p></li>
 </ul>
 </section>
 <section id="upstream-building-phylogenetic-tree">
-<h3>2.1.3 Upstream: Building Phylogenetic Tree<a class="headerlink" href="#upstream-building-phylogenetic-tree" title="Link to this heading">#</a></h3>
+<h3>2.1.4 Upstream: Building Phylogenetic Tree<a class="headerlink" href="#upstream-building-phylogenetic-tree" title="Link to this heading">#</a></h3>
 <p>We can build the phylogenetic tree based on the sequence difference among features. Phylogenetic diversity metrics like Faith’s pd, weighted and unweighted Unifrac distance require the phylogenetic tree to calculate.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>phylogeny<span class="w"> </span>align-to-tree-mafft-fasttree<span class="w"> </span><span class="se">\</span>
 --i-sequences<span class="w"> </span>rep-seqs.qza<span class="w"> </span><span class="se">\ </span>
@@ -519,13 +537,14 @@ FeatureTable to the sequences they represent.</p></li>
 </div>
 </section>
 <section id="upstream-taxonomic-assignment">
-<h3>2.1.4 Upstream: Taxonomic assignment<a class="headerlink" href="#upstream-taxonomic-assignment" title="Link to this heading">#</a></h3>
+<h3>2.1.5 Upstream: Taxonomic assignment<a class="headerlink" href="#upstream-taxonomic-assignment" title="Link to this heading">#</a></h3>
 <p>ASVs can be used to estimate the community diversity, while, to gain more biological insights, we should be more interested in what species or genus are presented in our data. So, to do this kind of taxonomic assignment, we should have a (1) a reference database, (2) an algorithm that we used to classify our sequence based on reference database.</p>
 <p>SILVA and greengene2 was the main database used in 16S.</p>
 <p>In QIIME2, we have different types of pre-trained <code class="docutils literal notranslate"><span class="pre">naive-bayes</span></code> classifiers (click <a class="reference external" href="https://docs.qiime2.org/2024.10/data-resources/">here</a> ). Those classifiers were mainly trained with (1) full-length of 16S region. (2) V4 region of 16S.</p>
 <ul class="simple">
 <li><p>As discussed before, the choice of region to amplify will influence the resolution of your taxonomic assignment. The use of classifiers trained with different region of sequence will also influence the resolution. The more specific, the better.</p></li>
 </ul>
+<p>As NEEN project target the v4 region, therefore, we just use the pre-trained v4 region of greengene2 database</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>feature-classifier<span class="w"> </span>classify-sklearn<span class="w"> </span><span class="se">\</span>
 --i-classifier<span class="w"> </span>classifier.qza<span class="w"> </span><span class="se">\ </span>
 --i-reads<span class="w"> </span>rep-seqs.qza<span class="w"> </span><span class="se">\ </span><span class="w">          </span><span class="c1"># sequence of the feature (ASVs)</span>
@@ -534,7 +553,8 @@ FeatureTable to the sequences they represent.</p></li>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You can also train your own classifiers using <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">feature-classifier</span> <span class="pre">fit-classifier-naive-bayes</span></code>. The developers of greengene2 also claimed in this <a class="reference external" href="https://forum.qiime2.org/t/introducing-greengenes2-2022-10/25291">website</a> that using the <code class="docutils literal notranslate"><span class="pre">de</span> <span class="pre">novo</span> <span class="pre">phylogeny</span></code> algorithm will have higher resolution in species level.</p>
+<p>You can also train your own classifiers using <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">feature-classifier</span> <span class="pre">fit-classifier-naive-bayes</span></code>. You may find more about how to train your own classifiers, <a class="reference external" href="https://github.com/nedchen2/DecodingMicrobiota/blob/main/code/bs.train_classifier.sh">here</a>. This is the code that I write for another project of V3-V4 REGION using SILVA 138.1 database. It will mainly depends on qiime2 plug-in <code class="docutils literal notranslate"><span class="pre">rescript</span> </code>. Check <a class="reference external" href="https://forum.qiime2.org/t/processing-filtering-and-evaluating-the-silva-database-and-other-reference-sequence-data-with-rescript/15494">here</a> for the official documents from the developer.</p>
+<p>The developers of greengene2 also claimed in this <a class="reference external" href="https://forum.qiime2.org/t/introducing-greengenes2-2022-10/25291">website</a> that using the <code class="docutils literal notranslate"><span class="pre">de</span> <span class="pre">novo</span> <span class="pre">phylogeny</span></code> algorithm will have higher resolution in species level.</p>
 </div>
 </section>
 <section id="more">
@@ -574,9 +594,14 @@ FeatureTable to the sequences they represent.</p></li>
 <li><p>and the feature-table.biom</p></li>
 </ul>
 <p>And for the standalone version as well,</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This turtorial provided code for picrust2 version v2.5.2 or v2.5.3. The developer of picrust2 recently post an update of their software to 2.6.0
+check <a class="reference external" href="https://github.com/picrust/picrust2/wiki/PICRUSt2%E2%80%90MPGA-database">here</a></p>
+</div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>picrust2_pipeline.py<span class="w"> </span>-s<span class="w"> </span>dna-sequences.fasta<span class="w"> </span><span class="se">\ </span><span class="w">  </span><span class="c1">#input fasta </span>
--i<span class="w"> </span>feature-table.biom<span class="w"> </span><span class="se">\ </span><span class="w">     </span><span class="c1"># input feature table</span>
--o<span class="w"> </span>picrust2_out_pipeline<span class="w"> </span><span class="se">\ </span><span class="w">   </span><span class="c1">#output to the directed directory</span>
+-i<span class="w"> </span>feature-table.biom<span class="w"> </span><span class="se">\ </span><span class="w">      </span><span class="c1"># input feature table</span>
+-o<span class="w"> </span>picrust2_out_pipeline<span class="w"> </span><span class="se">\ </span><span class="w">   </span><span class="c1"># output to the directed directory</span>
 -p<span class="w"> </span><span class="m">6</span><span class="w"> </span>--stratified<span class="w"> </span>--remove_intermediate<span class="w"> </span>--verbose
 </pre></div>
 </div>
@@ -727,9 +752,10 @@ pathways_out</label><div class="sd-tab-content docutils">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-pipeline">2.1 Basic Pipeline</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-importing-data-amd-examine-the-quality">2.1.1 Upstream: Importing data amd Examine the quality</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-denoise-sequences-selecting-sequence-variants">2.1.2 Upstream: Denoise sequences, selecting sequence variants</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-building-phylogenetic-tree">2.1.3 Upstream: Building Phylogenetic Tree</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-taxonomic-assignment">2.1.4 Upstream: Taxonomic assignment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-adapter-primer-barcodes-trimming">2.1.2 Upstream: Adapter/Primer/Barcodes trimming</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-denoise-sequences-selecting-sequence-variants">2.1.3 Upstream: Denoise sequences, selecting sequence variants</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-building-phylogenetic-tree">2.1.4 Upstream: Building Phylogenetic Tree</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-taxonomic-assignment">2.1.5 Upstream: Taxonomic assignment</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#more">More</a></li>
 </ul>
 </li>
