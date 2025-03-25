@@ -454,7 +454,7 @@ document.write(`
 <p>The artificial sequence (Adapter/Primer/Barcodes) will significantly influence the results of the classifiers, therefore it is essential to check and trim the sequence. We will apply cutadapt’s QIIM2 plugin for this purpose.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>cutadapt<span class="w"> </span>trim-paired<span class="w"> </span><span class="se">\ </span><span class="w">                 </span><span class="c1"># again, if you are single end data, change the command</span>
 <span class="w">    </span>--p-cores<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--i-demultiplexed-sequences<span class="w"> </span>../results/a.raw_data/paired-end-demux.qza<span class="se">\</span>
+<span class="w">    </span>--i-demultiplexed-sequences<span class="w"> </span>paired-end-demux.qza<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--p-front-f<span class="w"> </span>GTGCCAGCMGCCGCGGTAA<span class="w"> </span><span class="se">\ </span><span class="w">        </span><span class="c1"># refers to the primer sequence of forward</span>
 <span class="w">    </span>--p-front-r<span class="w"> </span>GGACTACNNGGGTATCTAAT<span class="w"> </span><span class="se">\ </span><span class="w">       </span><span class="c1"># refers to the primer sequence of reverse</span>
 <span class="w">    </span>--p-error-rate<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span><span class="se">\ </span><span class="w">                     </span><span class="c1"># We only 0.1 rate of error</span>
@@ -462,9 +462,10 @@ document.write(`
 <span class="w">    </span>--p-match-read-wildcards<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--p-match-adapter-wildcards<span class="w"> </span><span class="se">\ </span><span class="w">            </span>
 <span class="w">    </span>--p-discard-untrimmed<span class="w"> </span><span class="se">\ </span><span class="w">                  </span><span class="c1"># If no primer detected, meanings there might be some errors</span>
-<span class="w">    </span>--o-trimmed-sequences<span class="w"> </span>../results/a.raw_data/Primer_trimmed-seqs.qza
+<span class="w">    </span>--o-trimmed-sequences<span class="w"> </span>Primer_trimmed-seqs.qza
 </pre></div>
 </div>
+<p>The barcode will also be trimed, as long as the primer was detected. Check the trimmed clean data again!</p>
 </section>
 <section id="upstream-denoise-sequences-selecting-sequence-variants">
 <h3>2.1.3 Upstream: Denoise sequences, selecting sequence variants<a class="headerlink" href="#upstream-denoise-sequences-selecting-sequence-variants" title="Link to this heading">#</a></h3>
