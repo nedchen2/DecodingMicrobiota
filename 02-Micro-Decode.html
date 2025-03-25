@@ -589,15 +589,23 @@ FeatureTable to the sequences they represent.</p></li>
 </section>
 <section id="picrust2-full-pipeline">
 <h3>2.2.2 PICRUST2 full pipeline<a class="headerlink" href="#picrust2-full-pipeline" title="Link to this heading">#</a></h3>
-<p>To use Galaxy platform for picrust2 prediction, you need to input</p>
+<p>To use Galaxy platform for picrust2 standalone version to do prediction, you need to input</p>
 <ul class="simple">
-<li><p>a fasta file indicating the sequence of different feature you extracted from previous steps,</p></li>
-<li><p>and the feature-table.biom</p></li>
+<li><p>the feature-table.biom (a file format used to store ASV table in QIIME2)</p></li>
+<li><p>dna-sequences.fasta (a fasta file indicating the sequence of different feature you extracted from previous steps),</p></li>
 </ul>
-<p>And for the standalone version as well,</p>
+<p>While for QIIME2 plugin, it can directly input the</p>
+<ul class="simple">
+<li><p>ASV count table (table.qza)</p></li>
+<li><p>ASV representative sequences (rep-seqs.qza)</p></li>
+</ul>
+<p>To get the dna-sequences.fasta AND feature-table.biom from the QIIME2 object</p>
+<ul class="simple">
+<li><p>You can use <code class="docutils literal notranslate"><span class="pre">qiime2</span> <span class="pre">export</span></code></p></li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This turtorial provided code for picrust2 version v2.5.2 or v2.5.3. The developer of picrust2 recently post an update of their software to 2.6.0
+<p>This turtorial provided code for picrust2 version v2.5.2 or v2.5.3. The developer of picrust2 recently post an update of their software to 2.6.1
 check <a class="reference external" href="https://github.com/picrust/picrust2/wiki/PICRUSt2%E2%80%90MPGA-database">here</a></p>
 </div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>picrust2_pipeline.py<span class="w"> </span>-s<span class="w"> </span>dna-sequences.fasta<span class="w"> </span><span class="se">\ </span><span class="w">  </span><span class="c1">#input fasta </span>
