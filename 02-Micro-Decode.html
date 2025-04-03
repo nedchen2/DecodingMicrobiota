@@ -182,6 +182,7 @@
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="01-Micro-Decode.html">Chapter 1. Basic materials for 16S analysis</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 2. Upstream analysis</a></li>
+
 <li class="toctree-l1"><a class="reference internal" href="03-Micro-Decode.html">Chapter 3. Introduction to Microbiome Analysis</a></li>
 </ul>
 
@@ -378,6 +379,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Chapter 2. Upstream analysis</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-pipeline">2.1 Basic Pipeline</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-importing-data-amd-examine-the-quality">2.1.1 Upstream: Importing data amd Examine the quality</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-adapter-primer-barcodes-trimming">2.1.2 Upstream: Adapter/Primer/Barcodes trimming</a></li>
@@ -395,8 +397,14 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-limitations-of-picrust2">2.2.5 Key limitations of PICRUST2</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-platform-pacbio-ccs-full-length-16s">Other Platform: Pacbio CCS - Full length 16S</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downstream-analysis-suggestions-for-beginners">Downstream analysis: Suggestions for beginners</a></li>
 </ul>
+</li>
+</ul>
+
             </nav>
         </div>
     </div>
@@ -418,6 +426,19 @@ document.write(`
 <p>QIIME2 has provided a quite user-friendly documents, check:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/overview/">https://docs.qiime2.org/2024.10/tutorials/overview/</a></p></li>
+</ul>
+<p>And also through galaxy platform, use</p>
+<p>Import your data</p>
+<ul class="simple">
+<li><p>Dataset expects a single file containing the data, where as a collection like you are trying to upload is a directory(folder) of data.</p></li>
+<li><p><a class="reference external" href="https://docs.qiime2.org/jupyterbooks/cancer-microbiome-intervention-tutorial/020-tutorial-upstream/030-importing.html">https://docs.qiime2.org/jupyterbooks/cancer-microbiome-intervention-tutorial/020-tutorial-upstream/030-importing.html</a></p></li>
+<li><p><a class="reference external" href="https://usegalaxy.no/static/userguide/uploadfiles.html">https://usegalaxy.no/static/userguide/uploadfiles.html</a></p></li>
+<li><p><a class="reference external" href="https://forum.qiime2.org/t/using-qiime2-in-galaxy/27232/5">https://forum.qiime2.org/t/using-qiime2-in-galaxy/27232/5</a></p></li>
+<li><p><a class="reference external" href="https://forum.qiime2.org/t/import-failure-with-the-public-galaxy/26362/11">https://forum.qiime2.org/t/import-failure-with-the-public-galaxy/26362/11</a></p></li>
+</ul>
+<p>Cutadapt for single End</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://forum.qiime2.org/t/cut-adapt-for-single-end-sequences/18648">https://forum.qiime2.org/t/cut-adapt-for-single-end-sequences/18648</a></p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -682,6 +703,23 @@ pathways_out</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="other-platform-pacbio-ccs-full-length-16s">
+<h1>Other Platform: Pacbio CCS - Full length 16S<a class="headerlink" href="#other-platform-pacbio-ccs-full-length-16s" title="Link to this heading">#</a></h1>
+<p>For those users sequenced with Pacbio CCS platform, you could import your reads as single end.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>tools<span class="w"> </span>import
+--type<span class="w"> </span><span class="s1">&#39;SampleData[SequencesWithQuality]&#39;</span>
+--input-path<span class="w"> </span>se-33-manifest
+--output-path<span class="w"> </span>single-end-demux.qza
+--input-format<span class="w"> </span>SingleEndFastqManifestPhred33V2
+</pre></div>
+</div>
+<p>And denoise your reads with <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">dada2</span> <span class="pre">denoise-ccs</span></code>, because the command use Pacbio error model to denoise.
+You should set the primer information to the command:</p>
+<p><code class="docutils literal notranslate"><span class="pre">--p-front</span></code>  : Forward primer in 5’ to 3’. Example: 27F/1492R - AGAGTTTGATCMTGGCTCAG</p>
+<p><code class="docutils literal notranslate"><span class="pre">--p-adapter</span></code>: Reverse primer in 5’ to 3’. Example: 27F/1492R - TACGGYTACCTTGTTAYGACTT</p>
+<p>Check the <a class="reference external" href="https://docs.qiime2.org/2024.10/plugins/available/dada2/denoise-ccs/">link</a>. And the author has shown their github <a class="reference external" href="https://github.com/benjjneb/LRASManuscript">here</a></p>
+<p>Please also noted that if you still can not get a satisfactory retained reads. It may mean that some of the sequencing providers do not provide a sequence with adequate quality. In that casem we may transfer to OTU clustering with <code class="docutils literal notranslate"><span class="pre">--p-perc-identity</span> <span class="pre">0.99</span></code>. Also, you need to remove the primer and re-orient the ccs reads using <code class="docutils literal notranslate"><span class="pre">dada2::removePrimers</span></code> in R first.</p>
 <section id="downstream-analysis-suggestions-for-beginners">
 <h2>Downstream analysis: Suggestions for beginners<a class="headerlink" href="#downstream-analysis-suggestions-for-beginners" title="Link to this heading">#</a></h2>
 <p>Check:</p>
@@ -769,6 +807,7 @@ pathways_out</label><div class="sd-tab-content docutils">
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Chapter 2. Upstream analysis</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-pipeline">2.1 Basic Pipeline</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-importing-data-amd-examine-the-quality">2.1.1 Upstream: Importing data amd Examine the quality</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-adapter-primer-barcodes-trimming">2.1.2 Upstream: Adapter/Primer/Barcodes trimming</a></li>
@@ -786,8 +825,14 @@ pathways_out</label><div class="sd-tab-content docutils">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-limitations-of-picrust2">2.2.5 Key limitations of PICRUST2</a></li>
 </ul>
 </li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-platform-pacbio-ccs-full-length-16s">Other Platform: Pacbio CCS - Full length 16S</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downstream-analysis-suggestions-for-beginners">Downstream analysis: Suggestions for beginners</a></li>
 </ul>
+</li>
+</ul>
+
   </nav></div>
 
 </div></div>
