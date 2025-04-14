@@ -402,10 +402,13 @@ document.write(`
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-analysis-platform-galaxy">Other Analysis Platform: Galaxy</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trouble-shooting-for-galaxy-picrust2">Trouble Shooting for Galaxy Picrust2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trouble-shooting-for-galaxy">Trouble Shooting for Galaxy</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-sequencing-platform-pacbio-ccs-full-length-16s">Other Sequencing Platform: Pacbio CCS - Full length 16S</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-sequencing-platform-pacbio-ccs-full-length-16s">Other Sequencing Platform: Pacbio CCS - Full length 16S</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trouble-shooting-for-pacbio-ccs">Trouble Shooting for Pacbio CCS</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#downstream-analysis-suggestions-for-beginners">Downstream analysis: Suggestions for beginners</a></li>
 </ul>
 
@@ -698,27 +701,29 @@ pathways_out</label><div class="sd-tab-content docutils">
 <section class="tex2jax_ignore mathjax_ignore" id="other-analysis-platform-galaxy">
 <h1>Other Analysis Platform: Galaxy<a class="headerlink" href="#other-analysis-platform-galaxy" title="Link to this heading">#</a></h1>
 <p>Here, we offer some possible trouble shootings</p>
-<section id="trouble-shooting-for-galaxy-picrust2">
-<h2>Trouble Shooting for Galaxy Picrust2<a class="headerlink" href="#trouble-shooting-for-galaxy-picrust2" title="Link to this heading">#</a></h2>
-<p>1.Import your data into the Galaxy.</p>
+<section id="trouble-shooting-for-galaxy">
+<h2>Trouble Shooting for Galaxy<a class="headerlink" href="#trouble-shooting-for-galaxy" title="Link to this heading">#</a></h2>
+<p><u>1.Import your data into the Galaxy.</u></p>
 <ul class="simple">
 <li><p>Dataset expects a single file containing the data, where as a collection like you are trying to upload is a directory(folder) of data.</p></li>
 </ul>
 <p>Currently, we do not have a good instructions for data importing, but what I am pretty sure is you can not use <code class="docutils literal notranslate"><span class="pre">manifest</span></code> to input your data.</p>
 <ul class="simple">
-<li><p>Possibility 1 (rule-based builder)
-I would suggest to put your data online first, and then follow the instructions in the link <a class="reference external" href="https://docs.qiime2.org/jupyterbooks/cancer-microbiome-intervention-tutorial/020-tutorial-upstream/030-importing.html">here</a>,
-And check: the rule builder will be your friend at the moment:
-Hands-on: <a class="reference external" href="https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/upload-rules/tutorial.html">Rule Based Uploader / Rule Based Uploader / Using Galaxy and Managing your Data</a>
-Hands-on: <a class="reference external" href="https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/upload-rules-advanced/tutorial.html">Rule Based Uploader: Advanced / Rule Based Uploader: Advanced / Using Galaxy and Managing your Data</a></p></li>
-<li><p>Possibility 2 (Collection builder)
-First your file should follow the naming format of <code class="docutils literal notranslate"><span class="pre">Casava</span> <span class="pre">One</span> <span class="pre">Eight</span> <span class="pre">Single</span> <span class="pre">Lane</span> <span class="pre">Per</span> <span class="pre">Sample</span> <span class="pre">Directory</span> <span class="pre">Format</span></code>, match the following regex: <code class="docutils literal notranslate"><span class="pre">.+_.+_R[12]_001.fastq.gz</span></code>. Example like: <code class="docutils literal notranslate"><span class="pre">FMT.0093C_46_L001_R2_001.fastq.gz</span></code>.</p></li>
+<li><p>Possibility 1 (rule-based builder)</p></li>
 </ul>
+<p>Put your data online first, and then follow the instructions in the link <a class="reference external" href="https://docs.qiime2.org/jupyterbooks/cancer-microbiome-intervention-tutorial/020-tutorial-upstream/030-importing.html">here</a>,
+And check: the rule builder will be your friend at the moment:</p>
+<p>Hands-on: <a class="reference external" href="https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/upload-rules/tutorial.html">Rule Based Uploader / Rule Based Uploader / Using Galaxy and Managing your Data</a></p>
+<p>Hands-on: <a class="reference external" href="https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/upload-rules-advanced/tutorial.html">Rule Based Uploader: Advanced / Rule Based Uploader: Advanced / Using Galaxy and Managing your Data</a></p>
+<ul class="simple">
+<li><p>Possibility 2 (Collection builder)</p></li>
+</ul>
+<p>First your file should follow the naming format of <code class="docutils literal notranslate"><span class="pre">Casava</span> <span class="pre">One</span> <span class="pre">Eight</span> <span class="pre">Single</span> <span class="pre">Lane</span> <span class="pre">Per</span> <span class="pre">Sample</span> <span class="pre">Directory</span> <span class="pre">Format</span></code>, match the following regex: <code class="docutils literal notranslate"><span class="pre">.+_.+_R[12]_001.fastq.gz</span></code>. Example like: <code class="docutils literal notranslate"><span class="pre">FMT.0093C_46_L001_R2_001.fastq.gz</span></code>.</p>
 <p>Click <code class="docutils literal notranslate"><span class="pre">Upload</span> <span class="pre">Data</span></code>, select <code class="docutils literal notranslate"><span class="pre">Collection</span></code>, if paired-end data change Collection Type to List of Pairs, and add the local or ftp files. Click Start, and then Build.</p>
 <ul class="simple">
-<li><p>Possibility 3
-Otherwise, we would still suggest to use local computer with manifest to import the raw data into <code class="docutils literal notranslate"><span class="pre">.qza</span></code> and then upload it.</p></li>
+<li><p>Possibility 3 (Local machine builder)</p></li>
 </ul>
+<p>Otherwise, we would still suggest to use local computer with manifest to import the raw data into <code class="docutils literal notranslate"><span class="pre">.qza</span></code> and then upload it.</p>
 <p>Find more:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://docs.qiime2.org/jupyterbooks/cancer-microbiome-intervention-tutorial/020-tutorial-upstream/030-importing.html">https://docs.qiime2.org/jupyterbooks/cancer-microbiome-intervention-tutorial/020-tutorial-upstream/030-importing.html</a></p></li>
@@ -726,18 +731,22 @@ Otherwise, we would still suggest to use local computer with manifest to import 
 <li><p><a class="reference external" href="https://forum.qiime2.org/t/using-qiime2-in-galaxy/27232/5">https://forum.qiime2.org/t/using-qiime2-in-galaxy/27232/5</a></p></li>
 <li><p><a class="reference external" href="https://forum.qiime2.org/t/import-failure-with-the-public-galaxy/26362/11">https://forum.qiime2.org/t/import-failure-with-the-public-galaxy/26362/11</a></p></li>
 </ul>
-<p>2.I do not know how to cut the adapter from the single end sequence.</p>
+<p><u>2.I do not know how to cut the adapter from the single end sequence.</u></p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://forum.qiime2.org/t/cut-adapt-for-single-end-sequences/18648">https://forum.qiime2.org/t/cut-adapt-for-single-end-sequences/18648</a></p></li>
 </ul>
-<p>3.Can not find input <code class="docutils literal notranslate"><span class="pre">biom</span></code> for picrust2 after using <code class="docutils literal notranslate"><span class="pre">qiime2</span> <span class="pre">export</span></code>.</p>
+<p><u>3.Can not find input <code class="docutils literal notranslate"><span class="pre">biom</span></code> for picrust2 after using <code class="docutils literal notranslate"><span class="pre">qiime2</span> <span class="pre">export</span></code>.</u></p>
 <p>There is a mismatch between the biom file name from the newest version of qiime2 (BIOMv2DirFmt) and picrust2.5.3 (BIOMv2). You can first download your exported biom file. And then upload it again to the Galaxy. Galaxy will auto detect the format which would be acceptable for picurst2.</p>
-<p>4.Can not find the input KO_metagenome_out/pred_metagenome_contrib.tsv.gz in Galaxy after finish full pipeline ?</p>
+<p><u>4.Can not find the input KO_metagenome_out/pred_metagenome_contrib.tsv.gz in Galaxy after finish picrust2 <code class="docutils literal notranslate"><span class="pre">full</span> <span class="pre">pipeline</span></code> ?</u></p>
 <p>Use the <code class="docutils literal notranslate"><span class="pre">...</span></code> (Browse and upload your datasets) to find the hidden layer</p>
 </section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="other-sequencing-platform-pacbio-ccs-full-length-16s">
 <h1>Other Sequencing Platform: Pacbio CCS - Full length 16S<a class="headerlink" href="#other-sequencing-platform-pacbio-ccs-full-length-16s" title="Link to this heading">#</a></h1>
+<p>We will provide some trouble shooting here</p>
+<section id="trouble-shooting-for-pacbio-ccs">
+<h2>Trouble Shooting for Pacbio CCS<a class="headerlink" href="#trouble-shooting-for-pacbio-ccs" title="Link to this heading">#</a></h2>
+<p><u>1, Do not know how to input?</u></p>
 <p>For those users sequenced with Pacbio CCS platform, you could import your reads as single end.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>tools<span class="w"> </span>import
 --type<span class="w"> </span><span class="s1">&#39;SampleData[SequencesWithQuality]&#39;</span>
@@ -746,12 +755,15 @@ Otherwise, we would still suggest to use local computer with manifest to import 
 --input-format<span class="w"> </span>SingleEndFastqManifestPhred33V2
 </pre></div>
 </div>
-<p>And denoise your reads with <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">dada2</span> <span class="pre">denoise-ccs</span></code>, because the command use Pacbio error model to denoise.
-You should set the primer information to the command:</p>
+<p><u>2.How to denoise, do we need to cut adapter/primer before denoising?</u></p>
+<p>No, you do not need to cut adapter/primer before denoising.</p>
+<p>Denoise your reads with <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">dada2</span> <span class="pre">denoise-ccs</span></code>, because the command use Pacbio error model, which is different from previous next generation sequencing platform, to denoise.</p>
+<p>You should set the primer information to the command, otherwise the software can not find the target to denoise, and it will cut the adapter for you:</p>
 <p><code class="docutils literal notranslate"><span class="pre">--p-front</span></code>  : Forward primer in 5’ to 3’. Example: 27F/1492R - AGAGTTTGATCMTGGCTCAG</p>
 <p><code class="docutils literal notranslate"><span class="pre">--p-adapter</span></code>: Reverse primer in 5’ to 3’. Example: 27F/1492R - TACGGYTACCTTGTTAYGACTT</p>
 <p>Check the <a class="reference external" href="https://docs.qiime2.org/2024.10/plugins/available/dada2/denoise-ccs/">link</a>. And the author has shown their github <a class="reference external" href="https://github.com/benjjneb/LRASManuscript">here</a></p>
 <p>Please also noted that if you still can not get a satisfactory retained reads. It may mean that some of the sequencing providers do not provide a sequence with adequate quality. In that casem we may transfer to OTU clustering with <code class="docutils literal notranslate"><span class="pre">--p-perc-identity</span> <span class="pre">0.99</span></code>. Also, you need to remove the primer and re-orient the ccs reads using <code class="docutils literal notranslate"><span class="pre">dada2::removePrimers</span></code> in R first.</p>
+</section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="downstream-analysis-suggestions-for-beginners">
 <h1>Downstream analysis: Suggestions for beginners<a class="headerlink" href="#downstream-analysis-suggestions-for-beginners" title="Link to this heading">#</a></h1>
@@ -860,10 +872,13 @@ You should set the primer information to the command:</p>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-analysis-platform-galaxy">Other Analysis Platform: Galaxy</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trouble-shooting-for-galaxy-picrust2">Trouble Shooting for Galaxy Picrust2</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trouble-shooting-for-galaxy">Trouble Shooting for Galaxy</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-sequencing-platform-pacbio-ccs-full-length-16s">Other Sequencing Platform: Pacbio CCS - Full length 16S</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-sequencing-platform-pacbio-ccs-full-length-16s">Other Sequencing Platform: Pacbio CCS - Full length 16S</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trouble-shooting-for-pacbio-ccs">Trouble Shooting for Pacbio CCS</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#downstream-analysis-suggestions-for-beginners">Downstream analysis: Suggestions for beginners</a></li>
 </ul>
 
