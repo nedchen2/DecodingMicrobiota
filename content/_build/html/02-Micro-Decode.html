@@ -182,6 +182,9 @@
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="01-Micro-Decode.html">Chapter 1. Basic materials for 16S analysis</a></li>
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 2. Upstream analysis</a></li>
+
+
+
 <li class="toctree-l1"><a class="reference internal" href="03-Micro-Decode.html">Chapter 3. Introduction to Microbiome Analysis</a></li>
 </ul>
 
@@ -378,11 +381,13 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Chapter 2. Upstream analysis</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-pipeline">2.1 Basic Pipeline</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-importing-data-amd-examine-the-quality">2.1.1 Upstream: Importing data amd Examine the quality</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-denoise-sequences-selecting-sequence-variants">2.1.2 Upstream: Denoise sequences, selecting sequence variants</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-building-phylogenetic-tree">2.1.3 Upstream: Building Phylogenetic Tree</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-taxonomic-assignment">2.1.4 Upstream: Taxonomic assignment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-adapter-primer-barcodes-trimming">2.1.2 Upstream: Adapter/Primer/Barcodes trimming</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-denoise-sequences-selecting-sequence-variants">2.1.3 Upstream: Denoise sequences, selecting sequence variants</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-building-phylogenetic-tree">2.1.4 Upstream: Building Phylogenetic Tree</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-taxonomic-assignment">2.1.5 Upstream: Taxonomic assignment</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#more">More</a></li>
 </ul>
 </li>
@@ -394,8 +399,19 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-limitations-of-picrust2">2.2.5 Key limitations of PICRUST2</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downstream-analysis-suggestions-for-beginners">Downstream analysis: Suggestions for beginners</a></li>
 </ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-analysis-platform-galaxy">Other Analysis Platform: Galaxy</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trouble-shooting-for-galaxy">Trouble Shooting for Galaxy</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-sequencing-platform-pacbio-ccs-full-length-16s">Other Sequencing Platform: Pacbio CCS - Full length 16S</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trouble-shooting-for-pacbio-ccs">Trouble Shooting for Pacbio CCS</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#downstream-analysis-suggestions-for-beginners">Downstream analysis: Suggestions for beginners</a></li>
+</ul>
+
             </nav>
         </div>
     </div>
@@ -427,7 +443,7 @@ document.write(`
 <p>Import your sequencing data using <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">tools</span> <span class="pre">import</span></code>. I hope you have already noticed that we should use <code class="docutils literal notranslate"><span class="pre">manifest</span></code> to input multiple sequencing data into qiime2.</p>
 <ul class="simple">
 <li><p>Select the correct input type based on the tutorial. Check <a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/importing/#fastq-manifest-formats">here</a>.</p></li>
-<li><p>Mind that your sample id or name should be the same as that in sample metadata. However, in this case, you do not need to keep consistent with the sample name within original fastq file name.</p></li>
+<li><p>Mind that your sample id or name should be the same as that in sample metadata (mentioned in chapter 1).</p></li>
 </ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>tools<span class="w"> </span>import<span class="w">   </span>--type<span class="w"> </span><span class="s1">&#39;SampleData[PairedEndSequencesWithQuality]&#39;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--input-path<span class="w"> </span>manifest.tsv<span class="w">  </span><span class="se">\</span>
@@ -442,14 +458,39 @@ document.write(`
 </ul>
 </div>
 <p>After importation, Examine the sequencing quality <code class="docutils literal notranslate"><span class="pre">Interactive</span> <span class="pre">Quality</span> <span class="pre">Plot</span></code> with <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">demux</span> <span class="pre">summarize</span></code>:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># make a report to judge the base length to trim</span>
+qiime<span class="w"> </span>demux<span class="w"> </span>summarize<span class="w"> </span>--i-data<span class="w"> </span>paired-end-demux.qza<span class="w"> </span>--o-visualization<span class="w"> </span>paired-end-demux.qzv
+</pre></div>
+</div>
+</section>
+<section id="upstream-adapter-primer-barcodes-trimming">
+<h3>2.1.2 Upstream: Adapter/Primer/Barcodes trimming<a class="headerlink" href="#upstream-adapter-primer-barcodes-trimming" title="Link to this heading">#</a></h3>
+<p>The artificial sequence (Adapter/Primer/Barcodes) will significantly influence the results of the classifiers, therefore it is essential to check and trim the sequence. We will apply cutadapt’s QIIM2 plugin for this purpose.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>cutadapt<span class="w"> </span>trim-paired<span class="w"> </span><span class="se">\ </span><span class="w">                 </span><span class="c1"># again, if you are single end data, change the command</span>
+<span class="w">    </span>--p-cores<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--i-demultiplexed-sequences<span class="w"> </span>paired-end-demux.qza<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--p-front-f<span class="w"> </span>GTGCCAGCMGCCGCGGTAA<span class="w"> </span><span class="se">\ </span><span class="w">        </span><span class="c1"># refers to the primer sequence of forward</span>
+<span class="w">    </span>--p-front-r<span class="w"> </span>GGACTACNNGGGTATCTAAT<span class="w"> </span><span class="se">\ </span><span class="w">       </span><span class="c1"># refers to the primer sequence of reverse</span>
+<span class="w">    </span>--p-error-rate<span class="w"> </span><span class="m">0</span>.1<span class="w"> </span><span class="se">\ </span><span class="w">                     </span><span class="c1"># We only 0.1 rate of error</span>
+<span class="w">    </span>--p-overlap<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--p-match-read-wildcards<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--p-match-adapter-wildcards<span class="w"> </span><span class="se">\ </span><span class="w">            </span>
+<span class="w">    </span>--p-discard-untrimmed<span class="w"> </span><span class="se">\ </span><span class="w">                  </span><span class="c1"># If no primer detected, meanings there might be some errors</span>
+<span class="w">    </span>--o-trimmed-sequences<span class="w"> </span>Primer_trimmed-seqs.qza
+</pre></div>
+</div>
+<p>The barcode will also be trimed, as long as the primer was detected. Check the trimmed clean data again!</p>
+<p>You can also check the quality again!</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># make a report to judge the base length to trim</span>
+qiime<span class="w"> </span>demux<span class="w"> </span>summarize<span class="w"> </span>--i-data<span class="w"> </span>Primer_trimmed-seqs.qza<span class="w"> </span>--o-visualization<span class="w"> </span>Primer_trimmed-seqs.qzv
+</pre></div>
+</div>
 <ul class="simple">
 <li><p>This summary offers visual insights into the distribution of sequence qualities at each position within the sequence data for the subsequent step in the pipeline. The sequence qualities guide decisions regarding certain sequence-processing parameters, including the truncation settings for the DADA2 denoising step.</p></li>
-<li><p>Click <a class="reference external" href="https://view.qiime2.org/visualization/?src=https://docs.qiime2.org/2024.10/data/tutorials/moving-pictures-usage/demux.qzv">here</a> for an example</p></li>
-<li><p>How to visualize your data?</p></li>
 </ul>
 </section>
 <section id="upstream-denoise-sequences-selecting-sequence-variants">
-<h3>2.1.2 Upstream: Denoise sequences, selecting sequence variants<a class="headerlink" href="#upstream-denoise-sequences-selecting-sequence-variants" title="Link to this heading">#</a></h3>
+<h3>2.1.3 Upstream: Denoise sequences, selecting sequence variants<a class="headerlink" href="#upstream-denoise-sequences-selecting-sequence-variants" title="Link to this heading">#</a></h3>
 <p>QIIME2 provided two different types of denoising strategy: ASVs and OTUs. Check chapter 3 if you interested in this strategy. <code class="docutils literal notranslate"><span class="pre">DADA2</span></code> is generally suggested for ASVs denosing, while QIIME2 also provides <code class="docutils literal notranslate"><span class="pre">debular</span></code> for the same purpose. You can search for the comparison’s between these two tools.</p>
 <p>Through <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">dada2</span> <span class="pre">denoise-xx</span></code>, we can use dada2 within the QIIME2 platform (xx depends whether your input file is paired-end or single-end).</p>
 <p>This command enables us to eliminate low-quality regions from the sequences. It also facilitates the removal of primers prior to denoising. DADA2 necessitates the removal of primers to avoid false positive detection of chimeras due to primer degeneracy.</p>
@@ -466,10 +507,13 @@ document.write(`
 <blockquote>
 <div><p>–p-trim-left-r  : m trims off the first m bases of each reverse read sequence</p>
 </div></blockquote>
+<ul class="simple">
+<li><p>Click <a class="reference external" href="https://view.qiime2.org/visualization/?src=https://docs.qiime2.org/2024.10/data/tutorials/moving-pictures-usage/demux.qzv">demux.qzv</a> for an example</p></li>
+</ul>
 <div class="tip admonition">
 <p class="admonition-title">Question</p>
 <ul class="simple">
-<li><p>Based on the plots you see in demux.qzv, * Click <a class="reference external" href="https://view.qiime2.org/visualization/?src=https://docs.qiime2.org/2024.10/data/tutorials/moving-pictures-usage/demux.qzv">here</a> for an example, what values would you choose for <code class="docutils literal notranslate"><span class="pre">--p-trunc-len</span></code> and <code class="docutils literal notranslate"><span class="pre">--p-trim-left</span></code> in this case?</p></li>
+<li><p>Based on the plots you see in demux.qzv, what values would you choose for <code class="docutils literal notranslate"><span class="pre">--p-trunc-len</span></code> and <code class="docutils literal notranslate"><span class="pre">--p-trim-left</span></code> in this case?</p></li>
 </ul>
 </div>
 <div class="tip dropdown admonition">
@@ -478,11 +522,11 @@ document.write(`
 </div>
 <p>Check the result from last step to set the parameter used in this step.</p>
 <ul class="simple">
-<li><p>“TBD”: To be determined</p></li>
-<li><p>Mind that you can trim the primer sequence through <code class="docutils literal notranslate"><span class="pre">--p-trim-left</span></code></p></li>
+<li><p>“TBD”: To be determined by your own results. In NEEN project, we set “TBD” as zero, as the quality of the sequence was generally good.</p></li>
+<li><p>Mind that you can also trim the primer sequence through <code class="docutils literal notranslate"><span class="pre">--p-trim-left</span></code>. But it is not generally recommanded</p></li>
 </ul>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>dada2<span class="w"> </span>denoise-paired<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--i-demultiplexed-seqs<span class="w"> </span>paired-end-demux.qza<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--i-demultiplexed-seqs<span class="w"> </span>Primer_trimmed-seqs.qza<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--p-trunc-len-f<span class="w"> </span><span class="s2">&quot;TBD&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--p-trunc-len-r<span class="w"> </span><span class="s2">&quot;TBD&quot;</span><span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--p-trim-left-f<span class="w"> </span><span class="s2">&quot;TBD&quot;</span><span class="w"> </span><span class="se">\</span>
@@ -507,7 +551,7 @@ FeatureTable to the sequences they represent.</p></li>
 </ul>
 </section>
 <section id="upstream-building-phylogenetic-tree">
-<h3>2.1.3 Upstream: Building Phylogenetic Tree<a class="headerlink" href="#upstream-building-phylogenetic-tree" title="Link to this heading">#</a></h3>
+<h3>2.1.4 Upstream: Building Phylogenetic Tree<a class="headerlink" href="#upstream-building-phylogenetic-tree" title="Link to this heading">#</a></h3>
 <p>We can build the phylogenetic tree based on the sequence difference among features. Phylogenetic diversity metrics like Faith’s pd, weighted and unweighted Unifrac distance require the phylogenetic tree to calculate.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>phylogeny<span class="w"> </span>align-to-tree-mafft-fasttree<span class="w"> </span><span class="se">\</span>
 --i-sequences<span class="w"> </span>rep-seqs.qza<span class="w"> </span><span class="se">\ </span>
@@ -519,13 +563,14 @@ FeatureTable to the sequences they represent.</p></li>
 </div>
 </section>
 <section id="upstream-taxonomic-assignment">
-<h3>2.1.4 Upstream: Taxonomic assignment<a class="headerlink" href="#upstream-taxonomic-assignment" title="Link to this heading">#</a></h3>
+<h3>2.1.5 Upstream: Taxonomic assignment<a class="headerlink" href="#upstream-taxonomic-assignment" title="Link to this heading">#</a></h3>
 <p>ASVs can be used to estimate the community diversity, while, to gain more biological insights, we should be more interested in what species or genus are presented in our data. So, to do this kind of taxonomic assignment, we should have a (1) a reference database, (2) an algorithm that we used to classify our sequence based on reference database.</p>
 <p>SILVA and greengene2 was the main database used in 16S.</p>
 <p>In QIIME2, we have different types of pre-trained <code class="docutils literal notranslate"><span class="pre">naive-bayes</span></code> classifiers (click <a class="reference external" href="https://docs.qiime2.org/2024.10/data-resources/">here</a> ). Those classifiers were mainly trained with (1) full-length of 16S region. (2) V4 region of 16S.</p>
 <ul class="simple">
 <li><p>As discussed before, the choice of region to amplify will influence the resolution of your taxonomic assignment. The use of classifiers trained with different region of sequence will also influence the resolution. The more specific, the better.</p></li>
 </ul>
+<p>As NEEN project target the v4 region, therefore, we just use the pre-trained v4 region of greengene2 database</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>feature-classifier<span class="w"> </span>classify-sklearn<span class="w"> </span><span class="se">\</span>
 --i-classifier<span class="w"> </span>classifier.qza<span class="w"> </span><span class="se">\ </span>
 --i-reads<span class="w"> </span>rep-seqs.qza<span class="w"> </span><span class="se">\ </span><span class="w">          </span><span class="c1"># sequence of the feature (ASVs)</span>
@@ -534,7 +579,8 @@ FeatureTable to the sequences they represent.</p></li>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>You can also train your own classifiers using <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">feature-classifier</span> <span class="pre">fit-classifier-naive-bayes</span></code>. The developers of greengene2 also claimed in this <a class="reference external" href="https://forum.qiime2.org/t/introducing-greengenes2-2022-10/25291">website</a> that using the <code class="docutils literal notranslate"><span class="pre">de</span> <span class="pre">novo</span> <span class="pre">phylogeny</span></code> algorithm will have higher resolution in species level.</p>
+<p>You can also train your own classifiers using <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">feature-classifier</span> <span class="pre">fit-classifier-naive-bayes</span></code>. You may find more about how to train your own classifiers, <a class="reference external" href="https://github.com/nedchen2/DecodingMicrobiota/blob/main/code/bs.train_classifier.sh">here</a>. This is the code that I wrote for another project of V3-V4 REGION using SILVA 138.1 database. It will mainly depends on qiime2 plug-in <code class="docutils literal notranslate"><span class="pre">rescript</span> </code>. Check <a class="reference external" href="https://forum.qiime2.org/t/processing-filtering-and-evaluating-the-silva-database-and-other-reference-sequence-data-with-rescript/15494">here</a> for the official documents from the developer.</p>
+<p>The developers of greengene2 also claimed in this <a class="reference external" href="https://forum.qiime2.org/t/introducing-greengenes2-2022-10/25291">website</a> that using the <code class="docutils literal notranslate"><span class="pre">de</span> <span class="pre">novo</span> <span class="pre">phylogeny</span></code> algorithm will have higher resolution in species level.</p>
 </div>
 </section>
 <section id="more">
@@ -568,15 +614,28 @@ FeatureTable to the sequences they represent.</p></li>
 </section>
 <section id="picrust2-full-pipeline">
 <h3>2.2.2 PICRUST2 full pipeline<a class="headerlink" href="#picrust2-full-pipeline" title="Link to this heading">#</a></h3>
-<p>To use Galaxy platform for picrust2 prediction, you need to input</p>
+<p>To use Galaxy platform for picrust2 standalone version to do prediction, you need to input</p>
 <ul class="simple">
-<li><p>a fasta file indicating the sequence of different feature you extracted from previous steps,</p></li>
-<li><p>and the feature-table.biom</p></li>
+<li><p>the feature-table.biom (a file format used to store ASV table in QIIME2)</p></li>
+<li><p>dna-sequences.fasta (a fasta file indicating the sequence of different feature you extracted from previous steps),</p></li>
 </ul>
-<p>And for the standalone version as well,</p>
+<p>While for QIIME2 plugin, it can directly input the</p>
+<ul class="simple">
+<li><p>Feature table QIIME2 artifact (table.qza -  ASV count table )</p></li>
+<li><p>Feature sequence QIIME2 artifact (rep-seqs.qza - ASV representative sequences)</p></li>
+</ul>
+<p>To get the dna-sequences.fasta AND feature-table.biom from the QIIME2 artifact</p>
+<ul class="simple">
+<li><p>You can use <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">tools</span> <span class="pre">export</span></code></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This turtorial provided code for picrust2 version v2.5.2 or v2.5.3. The developer of picrust2 recently post an update of their software to 2.6.1
+check <a class="reference external" href="https://github.com/picrust/picrust2/wiki/PICRUSt2%E2%80%90MPGA-database">here</a></p>
+</div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>picrust2_pipeline.py<span class="w"> </span>-s<span class="w"> </span>dna-sequences.fasta<span class="w"> </span><span class="se">\ </span><span class="w">  </span><span class="c1">#input fasta </span>
--i<span class="w"> </span>feature-table.biom<span class="w"> </span><span class="se">\ </span><span class="w">     </span><span class="c1"># input feature table</span>
--o<span class="w"> </span>picrust2_out_pipeline<span class="w"> </span><span class="se">\ </span><span class="w">   </span><span class="c1">#output to the directed directory</span>
+-i<span class="w"> </span>feature-table.biom<span class="w"> </span><span class="se">\ </span><span class="w">      </span><span class="c1"># input feature table</span>
+-o<span class="w"> </span>picrust2_out_pipeline<span class="w"> </span><span class="se">\ </span><span class="w">   </span><span class="c1"># output to the directed directory</span>
 -p<span class="w"> </span><span class="m">6</span><span class="w"> </span>--stratified<span class="w"> </span>--remove_intermediate<span class="w"> </span>--verbose
 </pre></div>
 </div>
@@ -621,7 +680,7 @@ pathways_out</label><div class="sd-tab-content docutils">
 <aside class="margin sidebar">
 <p class="sidebar-title">Note</p>
 <ul class="simple">
-<li><p>No need to input <code class="docutils literal notranslate"><span class="pre">Github</span> <span class="pre">API</span> <span class="pre">Access</span> <span class="pre">Token</span></code>!</p></li>
+<li><p>No need to input <code class="docutils literal notranslate"><span class="pre">Github</span> <span class="pre">API</span> <span class="pre">Access</span> <span class="pre">Token</span></code>! Make sure there is nothing present in <code class="docutils literal notranslate"><span class="pre">Github</span> <span class="pre">API</span> <span class="pre">Access</span> <span class="pre">Token</span></code>!!! After you remove everything from the <code class="docutils literal notranslate"><span class="pre">Github</span> <span class="pre">API</span> <span class="pre">Access</span> <span class="pre">Token</span></code>, close the drop-down bar!</p></li>
 </ul>
 </aside>
 <img src="./graphics/Gitzip.png" alt="gitzip.png" width="500px"></section>
@@ -638,8 +697,76 @@ pathways_out</label><div class="sd-tab-content docutils">
 </div>
 </section>
 </section>
-<section id="downstream-analysis-suggestions-for-beginners">
-<h2>Downstream analysis: Suggestions for beginners<a class="headerlink" href="#downstream-analysis-suggestions-for-beginners" title="Link to this heading">#</a></h2>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="other-analysis-platform-galaxy">
+<h1>Other Analysis Platform: Galaxy<a class="headerlink" href="#other-analysis-platform-galaxy" title="Link to this heading">#</a></h1>
+<p>Here, we offer some possible trouble shootings</p>
+<section id="trouble-shooting-for-galaxy">
+<h2>Trouble Shooting for Galaxy<a class="headerlink" href="#trouble-shooting-for-galaxy" title="Link to this heading">#</a></h2>
+<p><u>1.Import your data into the Galaxy.</u></p>
+<ul class="simple">
+<li><p>Dataset expects a single file containing the data, where as a collection like you are trying to upload is a directory(folder) of data.</p></li>
+</ul>
+<p>Currently, we do not have a good instructions for data importing, but what I am pretty sure is you can not use <code class="docutils literal notranslate"><span class="pre">manifest</span></code> to input your data.</p>
+<ul class="simple">
+<li><p>Possibility 1 (rule-based builder)</p></li>
+</ul>
+<p>Put your data online first, and then follow the instructions in the link <a class="reference external" href="https://docs.qiime2.org/jupyterbooks/cancer-microbiome-intervention-tutorial/020-tutorial-upstream/030-importing.html">here</a>,
+And check: the rule builder will be your friend at the moment:</p>
+<p>Hands-on: <a class="reference external" href="https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/upload-rules/tutorial.html">Rule Based Uploader / Rule Based Uploader / Using Galaxy and Managing your Data</a></p>
+<p>Hands-on: <a class="reference external" href="https://training.galaxyproject.org/training-material/topics/galaxy-interface/tutorials/upload-rules-advanced/tutorial.html">Rule Based Uploader: Advanced / Rule Based Uploader: Advanced / Using Galaxy and Managing your Data</a></p>
+<ul class="simple">
+<li><p>Possibility 2 (Collection builder)</p></li>
+</ul>
+<p>First your file should follow the naming format of <code class="docutils literal notranslate"><span class="pre">Casava</span> <span class="pre">One</span> <span class="pre">Eight</span> <span class="pre">Single</span> <span class="pre">Lane</span> <span class="pre">Per</span> <span class="pre">Sample</span> <span class="pre">Directory</span> <span class="pre">Format</span></code>, match the following regex: <code class="docutils literal notranslate"><span class="pre">.+_.+_R[12]_001.fastq.gz</span></code>. Example like: <code class="docutils literal notranslate"><span class="pre">FMT.0093C_46_L001_R2_001.fastq.gz</span></code>.</p>
+<p>Click <code class="docutils literal notranslate"><span class="pre">Upload</span> <span class="pre">Data</span></code>, select <code class="docutils literal notranslate"><span class="pre">Collection</span></code>, if paired-end data change Collection Type to List of Pairs, and add the local or ftp files. Click Start, and then Build.</p>
+<ul class="simple">
+<li><p>Possibility 3 (Local machine builder)</p></li>
+</ul>
+<p>Otherwise, we would still suggest to use local computer with manifest to import the raw data into <code class="docutils literal notranslate"><span class="pre">.qza</span></code> and then upload it.</p>
+<p>Find more:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.qiime2.org/jupyterbooks/cancer-microbiome-intervention-tutorial/020-tutorial-upstream/030-importing.html">https://docs.qiime2.org/jupyterbooks/cancer-microbiome-intervention-tutorial/020-tutorial-upstream/030-importing.html</a></p></li>
+<li><p><a class="reference external" href="https://usegalaxy.no/static/userguide/uploadfiles.html">https://usegalaxy.no/static/userguide/uploadfiles.html</a></p></li>
+<li><p><a class="reference external" href="https://forum.qiime2.org/t/using-qiime2-in-galaxy/27232/5">https://forum.qiime2.org/t/using-qiime2-in-galaxy/27232/5</a></p></li>
+<li><p><a class="reference external" href="https://forum.qiime2.org/t/import-failure-with-the-public-galaxy/26362/11">https://forum.qiime2.org/t/import-failure-with-the-public-galaxy/26362/11</a></p></li>
+</ul>
+<p><u>2.I do not know how to cut the adapter from the single end sequence.</u></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://forum.qiime2.org/t/cut-adapt-for-single-end-sequences/18648">https://forum.qiime2.org/t/cut-adapt-for-single-end-sequences/18648</a></p></li>
+</ul>
+<p><u>3.Can not find input <code class="docutils literal notranslate"><span class="pre">biom</span></code> for picrust2 after using <code class="docutils literal notranslate"><span class="pre">qiime2</span> <span class="pre">export</span></code>.</u></p>
+<p>There is a mismatch between the biom file name from the newest version of qiime2 (BIOMv2DirFmt) and picrust2.5.3 (BIOMv2). You can first download your exported biom file. And then upload it again to the Galaxy. Galaxy will auto detect the format which would be acceptable for picurst2.</p>
+<p><u>4.Can not find the input KO_metagenome_out/pred_metagenome_contrib.tsv.gz in Galaxy after finish picrust2 <code class="docutils literal notranslate"><span class="pre">full</span> <span class="pre">pipeline</span></code> ?</u></p>
+<p>Use the <code class="docutils literal notranslate"><span class="pre">...</span></code> (Browse and upload your datasets) to find the hidden layer</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="other-sequencing-platform-pacbio-ccs-full-length-16s">
+<h1>Other Sequencing Platform: Pacbio CCS - Full length 16S<a class="headerlink" href="#other-sequencing-platform-pacbio-ccs-full-length-16s" title="Link to this heading">#</a></h1>
+<p>We will provide some trouble shooting here</p>
+<section id="trouble-shooting-for-pacbio-ccs">
+<h2>Trouble Shooting for Pacbio CCS<a class="headerlink" href="#trouble-shooting-for-pacbio-ccs" title="Link to this heading">#</a></h2>
+<p><u>1, Do not know how to input?</u></p>
+<p>For those users sequenced with Pacbio CCS platform, you could import your reads as single end.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>qiime<span class="w"> </span>tools<span class="w"> </span>import
+--type<span class="w"> </span><span class="s1">&#39;SampleData[SequencesWithQuality]&#39;</span>
+--input-path<span class="w"> </span>se-33-manifest
+--output-path<span class="w"> </span>single-end-demux.qza
+--input-format<span class="w"> </span>SingleEndFastqManifestPhred33V2
+</pre></div>
+</div>
+<p><u>2.How to denoise, do we need to cut adapter/primer before denoising?</u></p>
+<p>No, you do not need to cut adapter/primer before denoising.</p>
+<p>Denoise your reads with <code class="docutils literal notranslate"><span class="pre">qiime</span> <span class="pre">dada2</span> <span class="pre">denoise-ccs</span></code>, because the command use Pacbio error model, which is different from previous next generation sequencing platform, to denoise.</p>
+<p>You should set the primer information to the command, otherwise the software can not find the target to denoise, and it will cut the adapter for you:</p>
+<p><code class="docutils literal notranslate"><span class="pre">--p-front</span></code>  : Forward primer in 5’ to 3’. Example: 27F/1492R - AGAGTTTGATCMTGGCTCAG</p>
+<p><code class="docutils literal notranslate"><span class="pre">--p-adapter</span></code>: Reverse primer in 5’ to 3’. Example: 27F/1492R - TACGGYTACCTTGTTAYGACTT</p>
+<p>Check the <a class="reference external" href="https://docs.qiime2.org/2024.10/plugins/available/dada2/denoise-ccs/">link</a>. And the author has shown their github <a class="reference external" href="https://github.com/benjjneb/LRASManuscript">here</a></p>
+<p>Please also noted that if you still can not get a satisfactory retained reads. It may mean that some of the sequencing providers do not provide a sequence with adequate quality. In that casem we may transfer to OTU clustering with <code class="docutils literal notranslate"><span class="pre">--p-perc-identity</span> <span class="pre">0.99</span></code>. Also, you need to remove the primer and re-orient the ccs reads using <code class="docutils literal notranslate"><span class="pre">dada2::removePrimers</span></code> in R first.</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="downstream-analysis-suggestions-for-beginners">
+<h1>Downstream analysis: Suggestions for beginners<a class="headerlink" href="#downstream-analysis-suggestions-for-beginners" title="Link to this heading">#</a></h1>
 <p>Check:</p>
 <ul class="simple">
 <li><p>see <a class="reference external" href="https://forum.qiime2.org/t/tutorial-integrating-qiime2-and-r-for-data-visualization-and-analysis-using-qiime2r/4121">qiime2R</a> to input the qiime2 artifacts to phyloseq</p></li>
@@ -658,7 +785,6 @@ pathways_out</label><div class="sd-tab-content docutils">
 <dt id="term-Map-file">Map file<a class="headerlink" href="#term-Map-file" title="Link to this term">#</a></dt><dd><p>In bioinformatics, we mainly called some files could be used to represent some relationships between objects as map files.</p>
 </dd>
 </dl>
-</section>
 </section>
 
     <script type="text/x-thebe-config">
@@ -725,11 +851,13 @@ pathways_out</label><div class="sd-tab-content docutils">
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Chapter 2. Upstream analysis</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-pipeline">2.1 Basic Pipeline</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-importing-data-amd-examine-the-quality">2.1.1 Upstream: Importing data amd Examine the quality</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-denoise-sequences-selecting-sequence-variants">2.1.2 Upstream: Denoise sequences, selecting sequence variants</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-building-phylogenetic-tree">2.1.3 Upstream: Building Phylogenetic Tree</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-taxonomic-assignment">2.1.4 Upstream: Taxonomic assignment</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-adapter-primer-barcodes-trimming">2.1.2 Upstream: Adapter/Primer/Barcodes trimming</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-denoise-sequences-selecting-sequence-variants">2.1.3 Upstream: Denoise sequences, selecting sequence variants</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-building-phylogenetic-tree">2.1.4 Upstream: Building Phylogenetic Tree</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upstream-taxonomic-assignment">2.1.5 Upstream: Taxonomic assignment</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#more">More</a></li>
 </ul>
 </li>
@@ -741,8 +869,19 @@ pathways_out</label><div class="sd-tab-content docutils">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-limitations-of-picrust2">2.2.5 Key limitations of PICRUST2</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#downstream-analysis-suggestions-for-beginners">Downstream analysis: Suggestions for beginners</a></li>
 </ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-analysis-platform-galaxy">Other Analysis Platform: Galaxy</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trouble-shooting-for-galaxy">Trouble Shooting for Galaxy</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#other-sequencing-platform-pacbio-ccs-full-length-16s">Other Sequencing Platform: Pacbio CCS - Full length 16S</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#trouble-shooting-for-pacbio-ccs">Trouble Shooting for Pacbio CCS</a></li>
+</ul>
+</li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#downstream-analysis-suggestions-for-beginners">Downstream analysis: Suggestions for beginners</a></li>
+</ul>
+
   </nav></div>
 
 </div></div>

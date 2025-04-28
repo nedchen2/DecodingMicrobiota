@@ -183,6 +183,9 @@
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="01-Micro-Decode.html">Chapter 1. Basic materials for 16S analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="02-Micro-Decode.html">Chapter 2. Upstream analysis</a></li>
+
+
+
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 3. Introduction to Microbiome Analysis</a></li>
 </ul>
 
@@ -1679,6 +1682,14 @@ Run 1 stress 0.08689727
 <a class="reference internal image-reference" href="_images/230b13746dc2543ab8757f5a98ed94cfb4adf15cc6d428c2c62db13d5093dbd1.png"><img alt="_images/230b13746dc2543ab8757f5a98ed94cfb4adf15cc6d428c2c62db13d5093dbd1.png" src="_images/230b13746dc2543ab8757f5a98ed94cfb4adf15cc6d428c2c62db13d5093dbd1.png" style="width: 420px; height: 420px;" /></a>
 </div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can also extract the data that we used to plot this picture by</p>
+<ol class="arabic simple">
+<li><p>first assign the result to a object <code class="docutils literal notranslate"><span class="pre">plot</span> <span class="pre">&lt;-</span> <span class="pre">plot_ordination(...)</span></code></p></li>
+<li><p>Then the data could be found using <code class="docutils literal notranslate"><span class="pre">plot$data</span></code></p></li>
+</ol>
+</div>
 <p>Based on the ordination results, we can observe a clear separation between the samples in CTRL and EcN, especially in NMDS1. Remember in Section 3.1, we have discussed that the ordination techniques could condense the main variation between samples in a reduced dimension (2 in our case, i.e. NMDS1, NMDS2). The difference in NMDS1 indicating a noticable difference in the microbial composition. To gain statistical support, we will also apply PERMOANOVA to the dataset to test the significance based on the bray-curtis distance matrix.</p>
 <p>PERmutational Multivariate ANalysis of VAriance (PERMANOVA) is a permutation-based technique – it makes no distributional assumptions about multivariate normality or homogeneity of variances. In essence, similar to ANOVA, the PERMANOVA is designed for compares the variation between groups to the variation within groups.</p>
 <p>To do so, we need to extract the otu_table and sample data from the <code class="docutils literal notranslate"><span class="pre">phyloseq</span></code> object.</p>
@@ -1718,12 +1729,22 @@ Run 1 stress 0.08689727
 <span class="c1"># if (!require(&quot;BiocManager&quot;, quietly = TRUE))</span>
 <span class="c1">#    install.packages(&quot;BiocManager&quot;)</span>
 <span class="w"> </span>
-<span class="c1"># BiocManager::install(&quot;ANCOMBC&quot;)</span>
+<span class="c1"># BiocManager::install(&quot;ANCOMBC&quot;, version = &quot;2.6.0&quot;)</span>
 
 <span class="nf">library</span><span class="p">(</span><span class="s">&quot;ANCOMBC&quot;</span><span class="p">)</span>
+<span class="nf">packageVersion</span><span class="p">(</span><span class="s">&quot;ANCOMBC&quot;</span><span class="p">)</span><span class="w">  </span>
 </pre></div>
 </div>
 </div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1] ‘2.6.0’
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The R version used in this tutorial is 4.4.</p>
 </div>
 <div class="cell docutils container">
 <div class="cell_input docutils container">

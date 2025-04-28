@@ -182,6 +182,9 @@
         <ul class="current nav bd-sidenav">
 <li class="toctree-l1 current active"><a class="current reference internal" href="#">Chapter 1. Basic materials for 16S analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="02-Micro-Decode.html">Chapter 2. Upstream analysis</a></li>
+
+
+
 <li class="toctree-l1"><a class="reference internal" href="03-Micro-Decode.html">Chapter 3. Introduction to Microbiome Analysis</a></li>
 </ul>
 
@@ -378,7 +381,7 @@ document.write(`
             </div>
             <nav aria-label="Page">
                 <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-introduction">1.1 Basic Introduction</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-introduction-to-qiime2">1.1 Basic Introduction to QIIME2</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-qiime2">1.1.1 What is QIIME2?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#qiime2-artifacts-and-visualizations">1.1.2 QIIME2 artifacts and visualizations</a></li>
 </ul>
@@ -407,20 +410,28 @@ document.write(`
 <div><p>You cannot teach a man anything; you can only help him find it within himself.</p>
 <p class="attribution">—To The Beginners </p>
 </div></blockquote>
-<section id="basic-introduction">
-<h2>1.1 Basic Introduction<a class="headerlink" href="#basic-introduction" title="Link to this heading">#</a></h2>
 <p>This chapter aims to lay down the foundations of your to microbiota analysis using QIIME2. By the end of the chapter, you will know:</p>
 <ul class="simple">
 <li><p>How to install QIIME2 in your computer</p></li>
 <li><p>The basic syntax and command line for using QIIME2</p></li>
 </ul>
+<p>We will use the data from NEEN project (Johnson, et al, 2025) which is available through SRA database using accession number PRJNA1121063. Generally, the SRA Toolkit was recommanded to download multiple data from the database.</p>
+<p>Downloading instruction can be find here:</p>
+<ol class="arabic simple">
+<li><p><a class="reference external" href="https://www.ncbi.nlm.nih.gov/sra/docs/sradownload/">https://www.ncbi.nlm.nih.gov/sra/docs/sradownload/</a></p></li>
+<li><p><a class="reference external" href="https://bioinformaticsworkbook.org/dataAcquisition/fileTransfer/sra.html">https://bioinformaticsworkbook.org/dataAcquisition/fileTransfer/sra.html</a>.</p></li>
+</ol>
+<p>But it is also ok to ask the data in person from me.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The tutorial’s command will mostly focus on the short reads provided by illumina platform. We will focus on the command line version rather than the one used in Galaxy platform. But we still provide some basic instructions for these.</p>
+</div>
+<section id="basic-introduction-to-qiime2">
+<h2>1.1 Basic Introduction to QIIME2<a class="headerlink" href="#basic-introduction-to-qiime2" title="Link to this heading">#</a></h2>
 <p>QIIME2 has provided a quite user-friendly documents, check:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/overview/">https://docs.qiime2.org/2024.10/tutorials/overview/</a></p></li>
 </ul>
-<p>We will use the data from NEEN project (Johnson, et al, 2025) which is available through SRA database using accession number PRJNA1121063.</p>
-<p>Downloading instruction can be find here: <a class="reference external" href="https://bioinformaticsworkbook.org/dataAcquisition/fileTransfer/sra.html">https://bioinformaticsworkbook.org/dataAcquisition/fileTransfer/sra.html</a>.</p>
-<p>But it is also ok to ask the data in person from me.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The tutorial’s command will depends on version: qiime2-2023.2. The code might be changed slightly when you use different version of QIIME2</p>
@@ -484,16 +495,18 @@ QIIME 2 visualization (.qzv)</div>
 <ul class="simple">
 <li><p><a class="reference external" href="https://forum.qiime2.org/t/qiime-2-available-on-public-galaxy-server/26220">https://forum.qiime2.org/t/qiime-2-available-on-public-galaxy-server/26220</a></p></li>
 </ul>
-<p>If you choose to use command line, then I would suggest to use <code class="docutils literal notranslate"><span class="pre">conda</span></code> to install</p>
+<p>If you choose to use command line, then I would suggest to use <code class="docutils literal notranslate"><span class="pre">conda</span></code> to install. This turtorial will mainly focus on the command line. But I think Galaxy also provide a good platform for bioinformatics study.</p>
 </section>
 <section id="prepare-for-the-qiime2-sequencing-data">
 <h3>1.2.2 Prepare for the QIIME2: Sequencing data<a class="headerlink" href="#prepare-for-the-qiime2-sequencing-data" title="Link to this heading">#</a></h3>
+<p>This step is very important as you will need to specify which type of data you have when you want to import your data into QIIME2, check <a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/importing/#sequence-data-with-sequence-quality-information-i-e-fastq">Importing data</a>:</p>
 <ul class="simple">
 <li><p>Is your data clean? adpater, primer, barcode?</p></li>
 <li><p>Which region is your data targeting?</p></li>
 <li><p>Has your data been demultiplexed?</p></li>
 <li><p>Is your data paired end or single end?</p></li>
 <li><p>Phred33 or Phred64?</p></li>
+<li><p>what sequencing platform did you use for sequencing?</p></li>
 </ul>
 <p>what is adpater, primer, barcode?</p>
 <ul class="simple">
@@ -502,15 +515,74 @@ QIIME 2 visualization (.qzv)</div>
 <li><p>Barcodes: Distinguish between different samples in a multiplexed sequencing approach.</p></li>
 </ul>
 <p>Fasta file from 16S is relatively small, therefore you can directly open the file by the text editors in your computer. Go and copy and paste several sequence from your file.</p>
-<p>This step is very important as you will need to specify which type of data you have when you want to import your data into QIIME2, check <a class="reference external" href="https://docs.qiime2.org/2024.10/tutorials/importing/#sequence-data-with-sequence-quality-information-i-e-fastq">Importing data</a>:</p>
-</section>
+<p>This is the information given by the company about the barcode and primer</p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>SampleID</p></th>
+<th class="head text-left"><p>BarcodeSequence</p></th>
+<th class="head text-left"><p>LinkerPrimerSequence</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p>NEEN.011</p></td>
+<td class="text-left"><p>CAACTA,TGACCA</p></td>
+<td class="text-left"><p>GTGCCAGCMGCCGCGGTAA,GGACTACHVGGGTWTCTAAT</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>You might notice some letters other than A,T,G,C, like M, V. These are wild cards or IUPAC code, meaning it may refers to either A, T, G, C based on some rules. Check <a class="reference external" href="https://www.bioinformatics.org/sms/iupac.html">link</a></p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># 1 forward reads from NEEN.011 data</span>
+
+@A01426:40:H7H77DRXY:1:2101:28836:1047<span class="w"> </span><span class="m">1</span>:N:0:TACGACGT+CCATGAAC
+CAACTATGCCAGCAGCCGCGGTAATACGTAGGGGGCAAGCGTTATCCGGATTTACTGGGTGTAAAGGGAGCGTAGACGGCAGCGCAAGTCTGGAGTGAAATCCCATGGCTTAACCATGGAACTGCTTTGGAAACTGTGCAGCTGGAGTGCAGGAGAGGTAAGCGGAATTCCTAGTGTAGCGGTGAAATGCGTAGATATTAGGAGGAACACCAGTGGCGAAGGCGGCTTACTGGACTGTAACTGACGTTGA
++
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF::FFFFFFFFFFFF:FFFFFFFFFFFF:,FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FFFFFFF,FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+
+<span class="c1"># 1 reverse reads from NEEN.011 data</span>
+
+@A01426:40:H7H77DRXY:1:2101:28836:1047<span class="w"> </span><span class="m">2</span>:N:0:TACGACGT+CCATGAAC
+TGACCAGGACTACTCGGGTATCTAATCCTATTTGCTCCCCACGCTTTCGAGCCTCAACGTCAGTTACAGTCCAGTAAGCCGCCTTCGCCACTGGTGTTCCTCCTAATATCTACGCATTTCACCGCTACACTAGGAATTCCGCTTACCTCTCCTGCACTCCAGCTGCACAGTTTCCAAAGCAGTTCCATGGTTAAGCCATGGGATTTCACTCCAGACTTGCGCTGCCGTCTACGCTCCCTTTACACCCAGT
++
+FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+</pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<ul class="simple">
+<li><p>Is your data clean? adpater, primer, barcode?</p></li>
+</ul>
+<p>– Try to find the position of Barcode, Primer here in the example above. For the Primer sequence, generally it is ok to have one mismatch.</p>
+<ul class="simple">
+<li><p>Which region is your data targeting?</p></li>
+</ul>
+<p>– The region of your target can always match with the primer. Search “GTGCCAGCMGCCGCGGTAA GGACTACHVGGGTWTCTAAT v4”</p>
+<ul class="simple">
+<li><p>Has your data been demultiplexed?</p></li>
+</ul>
+<p>– If the data hasn’t been demultiplexed, it means you will have only one file for multiple sample.</p>
+<ul class="simple">
+<li><p>Is your data paired end or single end?</p></li>
+</ul>
+<p>– one file or two file for one single sample</p>
+<ul class="simple">
+<li><p>Phred33 or Phred64?</p></li>
+</ul>
+<p>– Phred64 is old-fashioned. So normally it would be Phred 33. Check the table below. Based on the table, it is clear that our file is Phred33, as we have seen “,”</p>
+<ul class="simple">
+<li><p><strong>what sequencing platform did you use for sequencing?</strong></p></li>
+</ul>
+<p>– This step is very important. As the main part of this tutorial will focus on illumina short-reads sequencing platform. If you use full-length Pacbio CCS. Then please check other tutorial or use chapter 2 “Other platform” for a start.</p>
+</div>
+<img src="./graphics/Phred64or33.png" alt="Phred" width="500px"></section>
 <section id="prepare-for-the-qiime2-sample-metadata">
 <h3>1.2.3 Prepare for the QIIME2: sample metadata<a class="headerlink" href="#prepare-for-the-qiime2-sample-metadata" title="Link to this heading">#</a></h3>
-<p>Sample metadata is saved in a tab-separated text file (.tsv). Each row corresponds to a sample, while each column denotes a specific metadata category. The first line serves as a header, listing the names of the metadata categories. <strong>The first column contains the sample names, which must match the names used in the Sample identifier of the FASTA files</strong>.</p>
+<p>Sample metadata will be used for diversity analysis, <code class="docutils literal notranslate"><span class="pre">feature-table</span> <span class="pre">summarize</span></code> or ANCOM analysis, etc, to provide other information like, Grouping information to the QIIME2. However, I suggest to use R for the downstream analysis. To do the analysis in R, we also need a similar table, therefore, you are highly suggest to finish a similar sample metadata for your own data in this step, no matter you choose QIIME2 or R.</p>
+<p>Sample metadata is saved in a tab-separated text file (.tsv). Each row corresponds to a sample, while each column denotes a specific metadata category. The first line serves as a header, listing the names of the metadata categories.</p>
 <ul class="simple">
 <li><p>This file was used for the software to do statistics based on your grouping</p></li>
 <li><p>also provide some information regarding the sequencing, e.g.  BarcodeSequence, LinkerPrimerSequence</p></li>
-<li><p>The column name for the sample names is fixed.</p></li>
+<li><p>The column name for the sample names is fixed, such as “sample-id”. So you can only pick the column name that QIIME2 provided.</p></li>
 </ul>
 <p>Check the <a class="reference external" href="https://data.qiime2.org/2024.10/tutorials/moving-pictures/sample_metadata">Link</a> for an example.</p>
 </section>
@@ -592,7 +664,7 @@ QIIME 2 visualization (.qzv)</div>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-introduction">1.1 Basic Introduction</a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#basic-introduction-to-qiime2">1.1 Basic Introduction to QIIME2</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#what-is-qiime2">1.1.1 What is QIIME2?</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#qiime2-artifacts-and-visualizations">1.1.2 QIIME2 artifacts and visualizations</a></li>
 </ul>
