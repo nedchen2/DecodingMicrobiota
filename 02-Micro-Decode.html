@@ -723,7 +723,7 @@ pathways_out</label><div class="sd-tab-content docutils">
 <span class="c1">#        The column_idx to remove &quot;KO:&quot;, for _contrib.tsv.gz, Use column_idx = 1; for _unstrat.tsv.gz, use column_idx = 0</span>
 </pre></div>
 </div>
-<p>For the easy cases, just run</p>
+<p>For the easy cases, just run (make sure you have fix_picrust2_output.py in your current working directory, or you can set the directory of the script by yourself)</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># step1:</span>
 python<span class="w"> </span>fix_picrust2_output.py<span class="w"> </span>picrust2_out_pipeline/KO_metagenome_out/pred_metagenome_contrib.tsv.gz<span class="w"> </span>picrust2_out_pipeline/KO_metagenome_out/pred_metagenome_contrib_fixed.tsv.gz<span class="w"> </span><span class="m">1</span>
 
