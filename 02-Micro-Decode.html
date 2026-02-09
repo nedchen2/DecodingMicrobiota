@@ -397,6 +397,11 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-description">2.2.3 Add description</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kegg-pathway-estimation">2.2.4 KEGG pathway estimation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-limitations-of-picrust2">2.2.5 Key limitations of PICRUST2</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#updated-scripts-for-picrust2-2-6-x">2.2.6 Updated Scripts for PICRUST2-2.6.X</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">KEGG pathway estimation</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-go-cazy-database-estimation">Additional GO/CAZY database estimation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -631,7 +636,7 @@ FeatureTable to the sequences they represent.</p></li>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This turtorial provided code for picrust2 version v2.5.2 or v2.5.3. The developer of picrust2 recently post an update of their software to 2.6.1
-check <a class="reference external" href="https://github.com/picrust/picrust2/wiki/PICRUSt2%E2%80%90MPGA-database">here</a></p>
+check <a class="reference external" href="https://github.com/picrust/picrust2/wiki/PICRUSt2%E2%80%90MPGA-database">here</a>. Please check section 2.2.6 for additional code to transfer from 2.5 to 2.6 smoothly.</p>
 </div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>picrust2_pipeline.py<span class="w"> </span>-s<span class="w"> </span>dna-sequences.fasta<span class="w"> </span><span class="se">\ </span><span class="w">  </span><span class="c1">#input fasta </span>
 -i<span class="w"> </span>feature-table.biom<span class="w"> </span><span class="se">\ </span><span class="w">      </span><span class="c1"># input feature table</span>
@@ -667,6 +672,7 @@ pathways_out</label><div class="sd-tab-content docutils">
 </section>
 <section id="kegg-pathway-estimation">
 <h3>2.2.4 KEGG pathway estimation<a class="headerlink" href="#kegg-pathway-estimation" title="Link to this heading">#</a></h3>
+<p><em>Please check your picrust2 version, if you are using picurst2 version &gt; 2.6. Check section 2.2.6 for additional steps.</em></p>
 <p>To estimate the KEGG pathway abundance from the KO_metagenome_out, we need to rerun the script using the mapfile from KEGG pathway to KO, like this:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pathway_pipeline.py<span class="w"> </span>-i<span class="w"> </span>picrust2_out_pipeline/KO_metagenome_out/pred_metagenome_contrib.tsv.gz<span class="w"> </span><span class="se">\ </span>
 <span class="w">    </span>-o<span class="w"> </span>KEGG_pathways_out<span class="w"> </span>--no_regroup<span class="w"> </span><span class="se">\</span>
@@ -695,6 +701,50 @@ pathways_out</label><div class="sd-tab-content docutils">
 <li><p>Description?</p></li>
 </ul>
 </div>
+</section>
+<section id="updated-scripts-for-picrust2-2-6-x">
+<h3>2.2.6 Updated Scripts for PICRUST2-2.6.X<a class="headerlink" href="#updated-scripts-for-picrust2-2-6-x" title="Link to this heading">#</a></h3>
+<p>The author posted an updated version of PICRUST2 (2.6.x), which mainly update the database from PICRUSt2-oldIMG to PICRUSt2-SC.</p>
+<p>there are some additional tips in order to transfer smoothly from picrust2.5 to picrust2.6</p>
+<section id="id1">
+<h4>KEGG pathway estimation<a class="headerlink" href="#id1" title="Link to this heading">#</a></h4>
+<p>Before you run the previous code for picurst2-2.5.x, you need to run a small script prior to it. This script was used to fix the format issue for KO output present after the update.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can find the scripts <a class="reference external" href="https://github.com/nedchen2/DecodingMicrobiota/blob/main/code/">here</a></p>
+</div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>fix_picrust2_output.py<span class="w"> </span><span class="o">[</span>input_file<span class="o">]</span><span class="w"> </span><span class="o">[</span>output_file<span class="o">]</span><span class="w"> </span><span class="o">[</span>column_ind<span class="o">]</span>
+<span class="c1"># Help:-----------</span>
+<span class="c1">#    input_file : str</span>
+<span class="c1">#        Path to input file (tsv or tsv.gz)</span>
+<span class="c1">#    output_file : str</span>
+<span class="c1">#        Path to output file (optional). If None, will overwrite input.</span>
+<span class="c1">#    column_idx : numeric,</span>
+<span class="c1">#        The column_idx to remove &quot;KO:&quot;, for _contrib.tsv.gz, Use column_idx = 1; for _unstrat.tsv.gz, use column_idx = 0</span>
+</pre></div>
+</div>
+<p>For the easy cases, just run</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># step1:</span>
+python<span class="w"> </span>fix_picrust2_output.py<span class="w"> </span>picrust2_out_pipeline/KO_metagenome_out/pred_metagenome_contrib.tsv.gz<span class="w"> </span>picrust2_out_pipeline/KO_metagenome_out/pred_metagenome_contrib_fixed.tsv.gz<span class="w"> </span><span class="m">1</span>
+
+<span class="c1"># step2:</span>
+pathway_pipeline.py<span class="w"> </span>-i<span class="w"> </span>picrust2_out_pipeline/KO_metagenome_out/pred_metagenome_contrib_fixed.tsv.gz<span class="w"> </span><span class="se">\ </span>
+<span class="w">    </span>-o<span class="w"> </span>KEGG_pathways_out<span class="w"> </span>--no_regroup<span class="w"> </span><span class="se">\</span>
+--map<span class="w"> </span>KEGG_pathways_to_KO.tsv<span class="w">  </span>
+</pre></div>
+</div>
+</section>
+<section id="additional-go-cazy-database-estimation">
+<h4>Additional GO/CAZY database estimation<a class="headerlink" href="#additional-go-cazy-database-estimation" title="Link to this heading">#</a></h4>
+<p>GO is a well-known and comprehensive database for all the basic biological GENOMIC annotation, while CAZY database is specified for carbohydrate-active enzyme.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>picrust2_pipeline.py<span class="w"> </span>-s<span class="w"> </span>dna-sequences.fasta<span class="w"> </span><span class="se">\ </span><span class="w">  </span><span class="c1">#input fasta </span>
+-i<span class="w"> </span>feature-table.biom<span class="w"> </span><span class="se">\ </span><span class="w">      </span><span class="c1"># input feature table</span>
+-o<span class="w"> </span>picrust2_out_pipeline<span class="w"> </span><span class="se">\ </span><span class="w">   </span><span class="c1"># output to the directed directory</span>
+--in_traits<span class="w"> </span>CAZY,EC,GO,KO<span class="w"> </span><span class="se">\ </span><span class="w">  </span><span class="c1"># By default, it was set to KO and EC.</span>
+-p<span class="w"> </span><span class="m">6</span><span class="w"> </span>--stratified<span class="w"> </span>--remove_intermediate<span class="w"> </span>--verbose
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 </section>
@@ -867,6 +917,11 @@ And check: the rule builder will be your friend at the moment:</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#add-description">2.2.3 Add description</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#kegg-pathway-estimation">2.2.4 KEGG pathway estimation</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#key-limitations-of-picrust2">2.2.5 Key limitations of PICRUST2</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#updated-scripts-for-picrust2-2-6-x">2.2.6 Updated Scripts for PICRUST2-2.6.X</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">KEGG pathway estimation</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-go-cazy-database-estimation">Additional GO/CAZY database estimation</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
